@@ -2,43 +2,36 @@ package sample;
 
 public class ShipPart
 {
-    /*Jeder Teil vom Schiff (in unserem Fall ist jeder Teil genau 40pixel lang) hat die Eigenschaften von der Klasse
-    ShipPart*/
+    // Refactoring: use Coordinates class instead of x and y
+    private final Coordinates coordinates;
 
-    private int x;
-    private int y;
-    private boolean damage;
+    // Refactoring: use 'damaged' instead of 'damage' for name
+    private boolean damaged;
 
     public int getX()
     {
-        return x;
+        return coordinates.x();
     }
 
     public int getY()
     {
-        return y;
+        return coordinates.y();
     }
 
-    public ShipPart(int x, int y)
+    public ShipPart(Coordinates coordinates)
     {
-        this.x = x;
-        this.y = y;
-        this.damage = false;
-
-        /*Dient der Ausgabe für uns, zum testen*/
-        System.out.println(" schiffteil an X= " + this.x + " Y =" + this.y + " schaden= " + this.damage);
+        this.coordinates = coordinates;
+        this.damaged     = false;
     }
 
-    /*ist dieser Teil vom Schiff zerstört?*/
     public boolean isDamaged()
     {
-        return damage;
+        return damaged;
     }
 
-    /*Wird in der Ship klasse, in der attack Methode aufgerufen!*/
     public void destroy()
     {
-        this.damage = true;
+        this.damaged = true;
     }
 
 }
