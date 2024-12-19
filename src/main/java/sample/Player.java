@@ -100,7 +100,7 @@ public class Player
                     direction = Direction.DOWN;
                     break;
             }
-        } while (this.area.setShip(x, y, length, direction, 0, 0));
+        } while (this.area.setShip(new Coordinates(x, y), new Coordinates(0, 0), direction, length));
     }
 
     public boolean simpleAIAttack(Player enemy)
@@ -113,7 +113,7 @@ public class Player
             y = random.nextInt((9 - 0) + 1) + 0;
         } while (this.attackPossible(x, y));
         this.SaveAttack(x, y);
-        return enemy.area.attack(x, y);
+        return enemy.area.attack(new Coordinates(x, y));
     }
 
     public boolean complexAIAttack(Player enemy)
@@ -131,8 +131,8 @@ public class Player
                 y = random.nextInt((9 - 0) + 1) + 0;
             } while (this.attackPossible(x, y));
             this.SaveAttack(x, y);
-            result = enemy.area.attack(x, y);
-            if (enemy.area.isDestroyed(x, y) != null)
+            result = enemy.area.attack(new Coordinates(x, y));
+            if (enemy.area.isDestroyed(new Coordinates(x, y)) != null)
             {
                 return true;
             } else if (!result)
@@ -170,7 +170,7 @@ public class Player
                         break;
                 }
             } while (this.attackPossible(x, y));
-            result = enemy.area.attack(x, y);
+            result = enemy.area.attack(new Coordinates(x, y));
             this.SaveAttack(x, y);
             if (result)
             {
@@ -202,7 +202,7 @@ public class Player
             if (this.attackPossible(x, y))
             {
                 this.SaveAttack(x, y);
-                result = enemy.area.attack(x, y);
+                result = enemy.area.attack(new Coordinates(x, y));
                 if (result)
                 {
                     AIsave.add(new AIsave(x, y, AIsave.get(0).getDirection(), false));

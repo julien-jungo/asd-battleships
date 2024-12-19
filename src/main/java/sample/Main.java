@@ -358,7 +358,7 @@ public class Main extends Application
 
                 if (a != null)
                 {
-                    if (player.area.setShip(a[0], a[1], imageship.getLength(), imageship.getDirection(), imageship.getDiffvectorx(), imageship.getDiffvectory()))
+                    if (player.area.setShip(new Coordinates(a[0], a[1]), new Coordinates(imageship.getDiffvectorx(), imageship.getDiffvectory()), imageship.getDirection(), imageship.getLength()))
                     {
                         // System.out.println("schiff angelegt");
                         imageship.lock();
@@ -424,7 +424,7 @@ public class Main extends Application
                     {
                         if (player1.attackPossible(a[0], a[1]))
                         {
-                            if (player2.area.attack(a[0], a[1]))
+                            if (player2.area.attack(new Coordinates(a[0], a[1])))
                             {
                                 drawAttack(a[0], a[1], x, y, player2);
                                 player1.SaveAttack(a[0], a[1]);
@@ -469,7 +469,7 @@ public class Main extends Application
                     {
                         if (player2.attackPossible(a[0], a[1]))
                         {
-                            if (player1.area.attack(a[0], a[1]))
+                            if (player1.area.attack(new Coordinates(a[0], a[1])))
                             {
                                 drawAttack(a[0], a[1], x, y, player1);
                                 player2.SaveAttack(a[0], a[1]);
@@ -550,7 +550,7 @@ public class Main extends Application
         Image image = new Image("file:res/1x2_Ship_Destroyed.png");
         /*Objekt ship wird entweder null oder ein Schiff zugewiesen (Siehe Klasse Ship, Methode isDestroyed). Wenn
         das Schiff zerstört ist, wird im switch case gefragt welche Länge und dementsprechen setzen wir das Schiff*/
-        Ship ship = player.area.isDestroyed(xx, yy);
+        Ship ship = player.area.isDestroyed(new Coordinates(xx, yy));
 
         if (ship != null)
         {
@@ -592,7 +592,7 @@ public class Main extends Application
             }
 
             /*Schiff kreiert und zum Battleshipcontainer dazugehaut und lock==true, um es nicht bewegbar zu machen*/
-            imageShipl = new ImageShip(x - ship.getDivx(), y - ship.getDivy(), ship.getLength(), image);
+            imageShipl = new ImageShip(x - ship.getDiffX(), y - ship.getDiffY(), ship.getLength(), image);
             battleshipcontainer.getChildren().add(imageShipl.getImageView());
             imageShipl.rotateTo(ship.getDirection());
             imageShipl.lock();
