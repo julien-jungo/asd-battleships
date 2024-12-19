@@ -592,7 +592,7 @@ public class Main extends Application
             }
 
             /*Schiff kreiert und zum Battleshipcontainer dazugehaut und lock==true, um es nicht bewegbar zu machen*/
-            imageShipl = new ImageShip(x - ship.getDivx(), y - ship.getDivy(), ship.getLength(), image);
+            imageShipl = new ImageShip(x - ship.getDiffX(), y - ship.getDiffY(), ship.getLength(), image);
             battleshipcontainer.getChildren().add(imageShipl.getImageView());
             imageShipl.rotateTo(ship.getDirection());
             imageShipl.lock();

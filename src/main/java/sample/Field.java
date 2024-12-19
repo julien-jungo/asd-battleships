@@ -137,7 +137,7 @@ public class Field
         diffvectorx und y? Das steht in der main bei der Methode saveShips dabei.*/
         if (isAreaFree(x, y, length, dire))
         {
-            this.fleet.add(new Ship(x, y, length, dire, diffvectorx, diffvectory));
+            this.fleet.add(new Ship(new Coordinates(x, y), new Coordinates(diffvectorx, diffvectory), dire, length));
             return true;
         } else
         {
@@ -153,7 +153,7 @@ public class Field
 
         for (Ship warship : this.fleet)
         {
-            if (warship.attack(x, y))
+            if (warship.attack(new Coordinates(x, y)))
             {
                 return true;
             }
@@ -169,7 +169,7 @@ Schiff zutreffen und checkIfDestroyed (Ship-Klasse) true liefert, returned es da
         {
             for (ShipPart part : warship.getShipParts())
             {
-                if (part.getX() == x && part.getY() == y && warship.checkIfDestroyed())
+                if (part.getX() == x && part.getY() == y && warship.isDestroyed())
                 {
                     return warship;
                 }
@@ -183,7 +183,7 @@ Schiff zutreffen und checkIfDestroyed (Ship-Klasse) true liefert, returned es da
     {
         for (Ship warship : this.fleet)
         {
-            if (!warship.checkIfDestroyed())
+            if (!warship.isDestroyed())
             {
                 return false;
             }

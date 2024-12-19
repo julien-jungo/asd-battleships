@@ -5,8 +5,8 @@ public class ShipPart
     // Refactoring: use Coordinates class instead of x and y
     private final Coordinates coordinates;
 
-    // Refactoring: use 'damaged' instead of 'damage' for name
-    private boolean damaged;
+    // Refactoring: use 'destroyed' instead of 'damage' for name
+    private boolean destroyed;
 
     public int getX()
     {
@@ -21,17 +21,17 @@ public class ShipPart
     public ShipPart(Coordinates coordinates)
     {
         this.coordinates = coordinates;
-        this.damaged     = false;
+        this.destroyed = false;
     }
 
-    public boolean isDamaged()
+    public boolean isDestroyed()
     {
-        return damaged;
+        return destroyed;
     }
 
     public void destroy()
     {
-        this.damaged = true;
+        this.destroyed = true;
     }
 
 }
