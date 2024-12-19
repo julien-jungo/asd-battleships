@@ -1,23 +1,37 @@
 package sample;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class Field
 {
-    private ArrayList<Ship> fleet = new ArrayList<>();
-
-    public ArrayList<Ship> getFleet()
-    {
-        return fleet;
+    private static final class Dimensions {
+        private static final int MIN_X = 0;
+        private static final int MAX_X = 9;
+        private static final int MIN_Y = 0;
+        private static final int MAX_Y = 9;
     }
 
-    /*Überprüft für alle Schiffe und deren ShipParts(zweite For Schleife), ob sie auf den jeweils übergebenen x,y
-    Koordinaten liegen.*/
+    // Refactoring: replace magic numbers with mapping of ship lengths to counts
+    private static final Map<Integer, Integer> SHIP_COUNT_BY_LENGTH = Map.of(
+            2, 4,
+            3, 3,
+            4, 2,
+            5, 1
+    );
+
+    // Refactoring: change type from ArrayList to List, use 'ships' instead of 'fleet' for name & make final
+    private final List<Ship> ships = new ArrayList<>();
+
+    // Refactoring: remove unused getter for fleet
+
     private boolean isFree(int x, int y)
     {
-        for (Ship warship : this.fleet)
+        // Refactoring: use 'ship' instead of 'warship'
+        for (Ship ship : ships)
         {
-            for (ShipPart part : warship.getShipParts())
+            for (ShipPart part : ship.getShipParts())
             {
                 if (part.getX() == x && part.getY() == y)
                 {
@@ -28,58 +42,51 @@ public class Field
         return true;
     }
 
-    /*Überprüft, ob man setzen darf.*/
-    private boolean isAreaFree(int x, int y, int length, Direction dir)
+    private static boolean isValid(int x, int y) {
+        // Refactoring: use constants instead of magic numbers
+        return x >= Dimensions.MIN_X &&
+               x <= Dimensions.MAX_X &&
+               y >= Dimensions.MIN_Y &&
+               y <= Dimensions.MAX_Y;
+    }
+
+    // Refactoring: use coordinates instead of x and y
+    private boolean isAreaFree(Coordinates coordinates, Direction dir, int length)
     {
+        var x = coordinates.x();
+        var y = coordinates.y();
+
         for (int i = 0; i < length; i++)
         {
-            /*Hier, nimmt es die Koordinaten und prüft ob es innerhalb vom Spielfeld liegt. Wenn nicht, returned er false und
-            isAreaFree liefert in der setShip Methode false zurück (was dann passiert, steht in der setShip Methode)*/
-            if (x < 0 || x > 9 || y < 0 || y > 9)
+            // Refactoring: extract condition to method
+            if (!isValid(x, y))
             {
-                //  System.out.println("anlegen x= "+x +" y= "+y);
+                // Refactoring: remove commented code
                 return false;
             }
 
-            /*Überprüft, ob möglich zu setzen mit der isFree Methode. Wenn nicht, ebenfalls false.*/
-            if (!this.isFree(x, y))
+            if (!isFree(x, y))
             {
                 return false;
             }
 
-            /*Wenn beide if-Bedienungen true zurück liefern, erhöhen wir entweder die x oder y Koordinate
-            abhängig von der Richtung. Wenn das Schiff nach oben zeigt, müssen wir y-- machen, um den nächsten 40
-            Pixelblock (== 1 ShipPart) zu überprüfen, ob da ein Schiff gesetzt werden darf. Das machen wir alles so
-            lang, wie die Länge von dem Schiff, das wir setzen wollen. (For-Schleife)*/
-            switch (dir)
-            {
-                case UP:
-                    y--;
-                    break;
-
-                case RIGHT:
-                    x++;
-                    break;
-
-                case LEFT:
-                    x--;
-                    break;
-
-                case DOWN:
-                    y++;
-                    break;
+            // Refactoring: use enhanced switch statement
+            switch (dir) {
+                case UP    -> y--;
+                case RIGHT -> x++;
+                case LEFT  -> x--;
+                case DOWN  -> y++;
             }
         }
+
         return true;
     }
 
-    /*Es zählt wie viele Schiffe es in der Länge schon gibt, in der wir gerade anlegen wollen. Nimmt hier aber noch
-    keine Rücksicht darauf, ob es schon 4 in der Länge 2 z.B schon gibt. Das passiert erst in der setShip Methode bzw
-    . isFleetComplete. */
     private int shipCount(int length)
     {
         int count = 0;
-        for (Ship warship : this.fleet)
+
+        for (Ship warship : this.ships)
         {
             if (warship.getLength() == length)
             {
@@ -89,55 +96,29 @@ public class Field
         return count;
     }
 
-    /*Liefert true zurück, wenn die folgenden Bedienungen in der Klammer, nach dem return, erfüllt sind. Sprich, wenn
-     shipCount für alle(!!) Schiffslängen die richtige Anzahl gezählt hat (z.B für length 2 ==4(Schiff)), dann true.*/
     public boolean isFleetComplete()
     {
-        return ((this.shipCount(2) == 4 && this.shipCount(3) == 3 && this.shipCount(4) == 2 && this.shipCount(5) == 1));//es gibt 4 2er ,3 3er  ,2 4er und 1 5er
+        // Refactoring: use mapping instead of magic numbers
+        return SHIP_COUNT_BY_LENGTH.entrySet().stream()
+                .allMatch(entry -> shipCount(entry.getKey()) == entry.getValue());
     }
 
-    public boolean setShip(int x, int y, int length, Direction dire, int diffvectorx, int diffvectory)
+    // Refactoring: use coordinates instead of x and y
+    public boolean setShip(Coordinates coordinates, Coordinates diffVector, Direction dir, int length)
     {
-
-    /*Zuerst überprüfen wir, ob die Anzahl der Schiffe, mit der Länge die wir gerade setzen wollen, nicht eh schon
-    erfüllt ist. Wenn schon, return false und brich ab.*/
-        switch (length)
-        {
-            case 2:
-                if (this.shipCount(length) >= 4)
-                {
-                    return false;
-                }
-                break;
-            case 3:
-                if (this.shipCount(length) >= 3)
-                {
-                    return false;
-                }
-                break;
-            case 4:
-                if (this.shipCount(length) >= 2)
-                {
-                    return false;
-                }
-                break;
-            case 5:
-                if (this.shipCount(length) >= 1)
-                {
-                    return false;
-                }
-                break;
-            default:
-                return false;
+        if (!SHIP_COUNT_BY_LENGTH.containsKey(length)) {
+            return false;
         }
 
-        /*Switch hat nirgends false zurück geliefert, wir landen hier. wir überprüfen mit der isAreaFree Methode, ob
-        wir am gewünschten Ort setzen dürfen. Wie?(steht oben beschrieben). Falls true, adden wir ein Objekt der
-        Klasse Ship (also ein Schiff) zu unserer ArrayList fleet mittels dem Konstruktor der Klasse Ship. Wieso
-        diffvectorx und y? Das steht in der main bei der Methode saveShips dabei.*/
-        if (isAreaFree(x, y, length, dire))
+        // Refactoring: use mapping instead of switch statement
+        if (shipCount(length) >= SHIP_COUNT_BY_LENGTH.get(length))
         {
-            this.fleet.add(new Ship(new Coordinates(x, y), new Coordinates(diffvectorx, diffvectory), dire, length));
+            return false;
+        }
+
+        if (isAreaFree(coordinates, dir, length))
+        {
+            ships.add(new Ship(coordinates, diffVector, dir, length));
             return true;
         } else
         {
@@ -145,58 +126,62 @@ public class Field
         }
     }
 
-    /*Es überprüft für jedes Schiff der Flotte (ArrayList mit Schiffen) ob die x,y Koordinaten zutreffen. Wenn ja,
-    dann werden die Koordinaten weitergegeben und die attack Methode in der Klasse Ship überprüft das gleiche für
-    jeden ShipPart.*/
-    public boolean attack(int x, int y)
+    // Refactoring: use coordinates instead of x and y
+    public boolean attack(Coordinates coordinates)
     {
-
-        for (Ship warship : this.fleet)
+        // Refactoring: use 'ship' instead of 'warship'
+        for (Ship ship : ships)
         {
-            if (warship.attack(new Coordinates(x, y)))
+            if (ship.attack(coordinates))
             {
                 return true;
             }
         }
-        return false;
 
+        return false;
     }
-/*Checkt für jeden ShipPart jedes Schiffes im fleet ArrayList, ob es destroyed ist. Wenn x und y auf ein ganzes
-Schiff zutreffen und checkIfDestroyed (Ship-Klasse) true liefert, returned es das zerstörte Schiff, ansonsten null.*/
-    public Ship isDestroyed(int x, int y)
+
+    // Refactoring: use coordinates instead of x and y
+    public Ship isDestroyed(Coordinates coordinates)
     {
-        for (Ship warship : this.fleet)
+        // Refactoring: use 'ship' instead of 'warship'
+        for (Ship ship : ships)
         {
-            for (ShipPart part : warship.getShipParts())
+            // Refactoring: use 'shipPart' instead of 'part'
+            for (ShipPart shipPart : ship.getShipParts())
             {
-                if (part.getX() == x && part.getY() == y && warship.isDestroyed())
+                if (
+                        shipPart.getX() == coordinates.x() &&
+                        shipPart.getY() == coordinates.y() &&
+                        ship.isDestroyed()
+                )
                 {
-                    return warship;
+                    return ship;
                 }
             }
         }
+
         return null;
     }
 
-    /*Es geht jedes Schiff durch und schaut ob es zerstört ist.*/
     public boolean gameOver()
     {
-        for (Ship warship : this.fleet)
+        // Refactoring: use 'ship' instead of 'warship'
+        for (Ship ship : ships)
         {
-            if (!warship.isDestroyed())
+            if (!ship.isDestroyed())
             {
                 return false;
             }
         }
+
         return true;
     }
 
-    /*Verwendung: reset Methode in der Main. Wenn reset aufgerufen wird, wird removeAll aktiviert, bedeutet, dass wir
-    eine neue ArrayList fleet erstellen (die alte wird gelöscht quasi).*/
     public void removeAll()
     {
-        this.fleet = new ArrayList<Ship>(0);
+        // Refactoring: use clear() instead of creating new list
+        ships.clear();
     }
-
 
 }
