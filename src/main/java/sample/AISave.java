@@ -1,43 +1,39 @@
 package sample;
 
 public class AISave {
+    // Refactoring: use Coordinates instead of x and y
     private Coordinates coordinates;
     private Direction direction;
-    private boolean water;
 
-    public AISave(Coordinates coordinates, boolean water) {
-        this.coordinates = coordinates;
-        this.water = water;
-        direction = null;
+    public int getX()
+    {
+        return coordinates.x();
     }
 
-    public AISave(Coordinates coordinates, Direction direction, boolean water) {
-        this.coordinates = coordinates;
-        this.direction = direction;
-        this.water = water;
+    public int getY()
+    {
+        return coordinates.y();
     }
 
-    public Coordinates getCoordinates() {
-        return coordinates;
-    }
-
-    public void setCoordinates(Coordinates coordinates) {
-        this.coordinates = coordinates;
-    }
-
-    public Direction getDirection() {
+    public Direction getDirection()
+    {
         return direction;
     }
 
-    public void setDirection(Direction direction) {
+    public void setDirection(Direction direction)
+    {
         this.direction = direction;
     }
 
-    public boolean isWater() {
-        return water;
+    public AISave(Coordinates coordinates, Direction direction)
+    {
+        this.coordinates = coordinates;
+        this.direction = direction;
     }
 
-    public void setWater(boolean water) {
-        this.water = water;
+    public AISave(Coordinates coordinates)
+    {
+        this.coordinates = coordinates;
+        direction=null;
     }
 }

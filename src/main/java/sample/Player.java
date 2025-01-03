@@ -119,14 +119,16 @@ public class Player {
                 return false;
             } else {
                 AIsave = new ArrayList<>();
-                AIsave.add(new AISave(new Coordinates(x, y), false));
+                AIsave.add(new AISave(new Coordinates(x, y)));
             }
         } else if (AIsave.get(0).getDirection() == null) {
             direction = Direction.DOWN;
-            x = AIsave.get(0).getCoordinates().x();
-            y = AIsave.get(0).getCoordinates().y();
-            do {
-                switch (random.nextInt((3 - 0) + 1) + 0) {
+            x = AIsave.get(0).getX();
+            y = AIsave.get(0).getY();
+            do
+            {
+                switch (random.nextInt((3 - 0) + 1) + 0)
+                {
                     case 0:
                         direction = Direction.RIGHT;
                         x++;
@@ -147,15 +149,16 @@ public class Player {
             } while (this.attackPossible(x, y));
             result = enemy.area.attack(new Coordinates(x, y));
             this.SaveAttack(x, y);
-            if (result) {
-                AIsave.add(new AISave(new Coordinates(x, y), direction, true));
+            if (result)
+            {
+                AIsave.add(new AISave(new Coordinates(x, y), direction));
                 return true;
             } else {
                 return false;
             }
         } else {
-            x = AIsave.get(0).getCoordinates().x();
-            y = AIsave.get(0).getCoordinates().y();
+            x = AIsave.get(0).getX();
+            y = AIsave.get(0).getY();
             switch (AIsave.get(0).getDirection()) {
                 case RIGHT:
                     x += (int) AIsave.size();
@@ -174,7 +177,7 @@ public class Player {
                 this.SaveAttack(x, y);
                 result = enemy.area.attack(new Coordinates(x, y));
                 if (result) {
-                    AIsave.add(new AISave(new Coordinates(x, y), AIsave.get(0).getDirection(), false));
+                    AIsave.add(new AISave(new Coordinates(x, y), AIsave.get(0).getDirection()));
                     return result;
                 } else {
                     switch (AIsave.get(0).getDirection()) {
@@ -211,7 +214,7 @@ public class Player {
                         a.setDirection(direction);
                         AIsave = new ArrayList<>();
                         AIsave.add(a);
-                        AIsave.add(new AISave(new Coordinates(x, y), direction, false));
+                        AIsave.add(new AISave(new Coordinates(x, y), direction));
                         return true;
                     } else {
                         AIsave = null;
