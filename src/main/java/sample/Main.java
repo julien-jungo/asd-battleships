@@ -23,6 +23,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import sample.assets.AudioAssets;
+import sample.assets.ButtonAssets;
 import sample.assets.ImageAssets;
 
 import java.io.File;
@@ -35,14 +36,14 @@ public class Main extends Application {
     private int gameround = 1;
     private boolean shipscomplete = false; //zu testzwecken auf true später muss auf false gestellt werden
 
-    private Button buttonSaveShipsLeft = new Button("Schiffe speichern");
-    private Button buttonSaveShipsRight = new Button("Schiffe Speichern");
-    private Button newGame = new Button("Neues Spiel");
-    private Button exit = new Button("Ka Lust mehr! EXIT");
-    private Button reset = new Button("Neustart");
-    private Button seeShips1 = new Button("Zeige meine Schiffe");
-    private Button seeShips2 = new Button("Zeige meine Schiffe");
-    private Button cont = new Button("Hier gehts weiter");
+    private Button buttonSaveShipsLeft = new Button(ButtonAssets.SAVE_SHIPS.getString());
+    private Button buttonSaveShipsRight = new Button(ButtonAssets.SAVE_SHIPS.getString());
+    private Button newGame = new Button(ButtonAssets.NEW_GAME.getString());
+    private Button exit = new Button(ButtonAssets.EXIT.getString());
+    private Button reset = new Button(ButtonAssets.RESET.getString());
+    private Button seeShips1 = new Button(ButtonAssets.SEE_SHIPS.getString());
+    private Button seeShips2 = new Button(ButtonAssets.SEE_SHIPS.getString());
+    private Button cont = new Button(ButtonAssets.CONTINUE.getString());
 
     private ImageView startmenu = new ImageView(ImageAssets.START_MENU.getPath());
     private ImageView wonleft = new ImageView(ImageAssets.WON_LEFT.getPath());
