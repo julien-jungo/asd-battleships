@@ -352,11 +352,13 @@ public class Main extends Application {
         }
     }
 
+    // Refactoring: Extract Method
     private void letPlayer2PostionShips() {
         changeMask();
         buttonSaveShipsLeft.setVisible(false);
     }
 
+    // Refactoring: Extract Method
     private void changeModeToBattlePhase() {
         activateMask();
         buttonSaveShipsRight.setVisible(false);
@@ -366,6 +368,8 @@ public class Main extends Application {
     }
 
     // Refactoring: Introduce Parameter Object
+    // Refactoring: Extract Method
+    // Refactoring: Replace Nested Conditional with Guard Clauses
     private void placeShipOnBoard(ImageShip imageship, Player player, Coordinates bottomLeftOfPositionBoard, Coordinates topRightOfPositionBoard) {
         if (imageship.isDisable()) {
             return;
