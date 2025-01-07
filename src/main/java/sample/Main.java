@@ -330,11 +330,7 @@ public class Main extends Application {
             if (player == player1) {
                 letPlayer2PostionShips();
             } else {
-                buttonSaveShipsRight.setVisible(false);
-                changeMask();
-                seeShips1.setVisible(true);
-                seeShips2.setVisible(true);
-                indicate1.setVisible(true);
+                changeModeToBattlePhase();
             }
             if (player1.area.isFleetComplete() && player2.area.isFleetComplete()) {
                 activateMask();
@@ -345,6 +341,14 @@ public class Main extends Application {
     private void letPlayer2PostionShips() {
         changeMask();
         buttonSaveShipsLeft.setVisible(false);
+    }
+
+    private void changeModeToBattlePhase() {
+        buttonSaveShipsRight.setVisible(false);
+        seeShips1.setVisible(true);
+        seeShips2.setVisible(true);
+        indicate1.setVisible(true);
+        changeMask();
     }
 
     private void placeShipOnBoard(ImageShip imageship, Player player, int p1x, int p1y, int p2x, int p2y) {
