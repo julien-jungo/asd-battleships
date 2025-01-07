@@ -330,7 +330,7 @@ public class Main extends Application {
     private void saveShips(ImageShip imageShip[], Player player, Coordinates bottomLeftOfPositionBoard, Coordinates topRightOfPositionBoard) {
         /*Geht alle Schiffe duch und schaut erstmal ob */
         for (ImageShip imageship : imageShip) {
-            placeShipOnBoard(imageship, player, bottomLeftOfPositionBoard.x(), bottomLeftOfPositionBoard.y(), topRightOfPositionBoard.x(), topRightOfPositionBoard.y());
+            placeShipOnBoard(imageship, player, bottomLeftOfPositionBoard, topRightOfPositionBoard);
         }
         if (player.area.isFleetComplete()) {
             gameround++;
@@ -355,11 +355,12 @@ public class Main extends Application {
         activateMask();
     }
 
-    private void placeShipOnBoard(ImageShip imageship, Player player, int p1x, int p1y, int p2x, int p2y) {
+    // Refactoring: Introduce Parameter Object
+    private void placeShipOnBoard(ImageShip imageship, Player player, Coordinates bottomLeftOfPositionBoard, Coordinates topRightOfPositionBoard) {
         if (imageship.isDisable()) {
             return;
         }
-        int a[] = calculateXY(imageship.getCoordinates().x(), imageship.getCoordinates().y(), p1x, p1y, p2x, p2y);
+        int a[] = calculateXY(imageship.getCoordinates().x(), imageship.getCoordinates().y(), bottomLeftOfPositionBoard.x(), bottomLeftOfPositionBoard.y(), topRightOfPositionBoard.x(), topRightOfPositionBoard.y());
 
         if (a == null) {
             imageship.changePosition(new Coordinates(0, 0));
