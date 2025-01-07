@@ -328,21 +328,23 @@ public class Main extends Application {
         if (player.area.isFleetComplete()) {
             gameround++;
             if (player == player1) {
-                changeMask();
-                buttonSaveShipsLeft.setVisible(false);
+                letPlayer2PostionShips();
             } else {
                 buttonSaveShipsRight.setVisible(false);
                 changeMask();
                 seeShips1.setVisible(true);
                 seeShips2.setVisible(true);
                 indicate1.setVisible(true);
-
-
             }
             if (player1.area.isFleetComplete() && player2.area.isFleetComplete()) {
                 activateMask();
             }
         }
+    }
+
+    private void letPlayer2PostionShips() {
+        changeMask();
+        buttonSaveShipsLeft.setVisible(false);
     }
 
     private void placeShipOnBoard(ImageShip imageship, Player player, int p1x, int p1y, int p2x, int p2y) {
