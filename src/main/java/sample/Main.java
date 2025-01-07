@@ -390,94 +390,98 @@ public class Main extends Application {
         imageship.lock();
     }
 
+    // Refactoring: Replace Nested Conditional with Guard Clauses
     private void attacks(int x, int y) {
         int a[];
-        if (!(player1.area.gameOver() || player2.area.gameOver())) {
-            if (shipscomplete) {
-                System.out.println("Schiffe fertig");
-                if (gameround % 2 == 1) {
-                    a = calculateXY(x, y, 440 + 40, 40 + 40, 440 + 440, 440 + 40);
 
-                    if (a != null) {
-                        if (player1.attackPossible(a[0], a[1])) {
-                            if (player2.area.attack(new Coordinates(a[0], a[1]))) {
-                                drawAttack(a[0], a[1], x, y, player2);
-                                player1.SaveAttack(a[0], a[1]);
-                                activateMask();
-                                bombplay.stop();
-                                bombplay.play();
+        if (player1.area.gameOver() || player2.area.gameOver()) {
+            return;
+        }
 
-                            } else {
-                                drawMiss(x, y);
-                                player1.SaveAttack(a[0], a[1]);
-                                activateMask();
-                                indicate1.setVisible(false);
-                                indicate2.setVisible(true);
-                                missplay.stop();
-                                missplay.play();
-                            }
-                        }
-                    }
-                    if (player2.area.gameOver()) {
-                        System.out.println("Spieler 1 hat gewonnen");
-                        deactivateMask();
-                        seeShips1.setVisible(false);
-                        seeShips2.setVisible(false);
-                        reset.setVisible(false);
-                        battleshipcontainer.getChildren().add(wonleft);
-                        wonleft.setX(50);
-                        wonleft.setY(520);
-                        winnerplay.stop();
-                        winnerplay.play();
-                        battleshipcontainer.getChildren().add(cont);
-                        cont.setLayoutX(160);
-                        cont.setLayoutY(850);
-                        cont.setVisible(true);
-                    }
+        if (!shipscomplete) {
+            return;
+        }
+        System.out.println("Schiffe fertig");
+        if (gameround % 2 == 1) {
+            a = calculateXY(x, y, 440 + 40, 40 + 40, 440 + 440, 440 + 40);
 
-                } else {
-                    a = calculateXY(x, y, 440 + 40 + 10 * 40 + 2 * 40, 40 + 40, 440 + 440 + 440 + 40, 440 + 40);
-                    if (a != null) {
-                        if (player2.attackPossible(a[0], a[1])) {
-                            if (player1.area.attack(new Coordinates(a[0], a[1]))) {
-                                drawAttack(a[0], a[1], x, y, player1);
-                                player2.SaveAttack(a[0], a[1]);
-                                activateMask();
-                                bombplay.stop();
-                                bombplay.play();
+            if (a != null) {
+                if (player1.attackPossible(a[0], a[1])) {
+                    if (player2.area.attack(new Coordinates(a[0], a[1]))) {
+                        drawAttack(a[0], a[1], x, y, player2);
+                        player1.SaveAttack(a[0], a[1]);
+                        activateMask();
+                        bombplay.stop();
+                        bombplay.play();
 
-                            } else {
-                                drawMiss(x, y);
-                                player2.SaveAttack(a[0], a[1]);
-                                activateMask();
-                                indicate1.setVisible(true);
-                                indicate2.setVisible(false);
-                                missplay.stop();
-                                missplay.play();
-                            }
-
-                        }
-                    }
-                    if (player1.area.gameOver()) {
-                        System.out.println("Spieler 2 hat gewonnen");
-                        deactivateMask();
-                        seeShips1.setVisible(false);
-                        seeShips2.setVisible(false);
-                        reset.setVisible(false);
-                        battleshipcontainer.getChildren().add(wonright);
-                        wonright.setX(1450);
-                        wonright.setY(520);
-                        winnerplay.stop();
-                        winnerplay.play();
-                        battleshipcontainer.getChildren().add(cont);
-                        cont.setLayoutX(1520);
-                        cont.setLayoutY(850);
-                        cont.setVisible(true);
-
+                    } else {
+                        drawMiss(x, y);
+                        player1.SaveAttack(a[0], a[1]);
+                        activateMask();
+                        indicate1.setVisible(false);
+                        indicate2.setVisible(true);
+                        missplay.stop();
+                        missplay.play();
                     }
                 }
             }
+            if (player2.area.gameOver()) {
+                System.out.println("Spieler 1 hat gewonnen");
+                deactivateMask();
+                seeShips1.setVisible(false);
+                seeShips2.setVisible(false);
+                reset.setVisible(false);
+                battleshipcontainer.getChildren().add(wonleft);
+                wonleft.setX(50);
+                wonleft.setY(520);
+                winnerplay.stop();
+                winnerplay.play();
+                battleshipcontainer.getChildren().add(cont);
+                cont.setLayoutX(160);
+                cont.setLayoutY(850);
+                cont.setVisible(true);
+            }
 
+        } else {
+            a = calculateXY(x, y, 440 + 40 + 10 * 40 + 2 * 40, 40 + 40, 440 + 440 + 440 + 40, 440 + 40);
+            if (a != null) {
+                if (player2.attackPossible(a[0], a[1])) {
+                    if (player1.area.attack(new Coordinates(a[0], a[1]))) {
+                        drawAttack(a[0], a[1], x, y, player1);
+                        player2.SaveAttack(a[0], a[1]);
+                        activateMask();
+                        bombplay.stop();
+                        bombplay.play();
+
+                    } else {
+                        drawMiss(x, y);
+                        player2.SaveAttack(a[0], a[1]);
+                        activateMask();
+                        indicate1.setVisible(true);
+                        indicate2.setVisible(false);
+                        missplay.stop();
+                        missplay.play();
+                    }
+
+                }
+            }
+            if (player1.area.gameOver()) {
+                System.out.println("Spieler 2 hat gewonnen");
+                deactivateMask();
+                seeShips1.setVisible(false);
+                seeShips2.setVisible(false);
+                reset.setVisible(false);
+                battleshipcontainer.getChildren().add(wonright);
+                wonright.setX(1450);
+                wonright.setY(520);
+                winnerplay.stop();
+                winnerplay.play();
+                battleshipcontainer.getChildren().add(cont);
+                cont.setLayoutX(1520);
+                cont.setLayoutY(850);
+                cont.setVisible(true);
+
+            }
         }
     }
 
