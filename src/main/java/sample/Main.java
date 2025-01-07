@@ -336,24 +336,30 @@ public class Main extends Application {
     }
 
     // Refactoring: Method extraction
+    // Refactoring: Change Function Declaration (name changed from saveShips)
     private void handleButtonSavedClicked(ImageShip[] imageShip, Player player, Coordinates bottomLeftOfPositionBoard, Coordinates topRightOfPositionBoard) {
         saveShips(imageShip, player, bottomLeftOfPositionBoard, topRightOfPositionBoard);
+        if (player.area.isFleetComplete()) {
+            startNextGamePhase(player);
+        }
         shipsComplete();
     }
 
     // Refactoring: Introduce Parameter Object - Coordinates
+    // Refactoring: Extract Method
     private void saveShips(ImageShip imageShip[], Player player, Coordinates bottomLeftOfPositionBoard, Coordinates topRightOfPositionBoard) {
-        /*Geht alle Schiffe duch und schaut erstmal ob */
         for (ImageShip imageship : imageShip) {
             placeShipOnBoard(imageship, player, bottomLeftOfPositionBoard, topRightOfPositionBoard);
         }
-        if (player.area.isFleetComplete()) {
-            gameround++;
-            if (player == player1) {
-                letPlayer2PostionShips();
-            } else {
-                changeModeToBattlePhase();
-            }
+    }
+
+    // Refactoring: Extract Method
+    private void startNextGamePhase(Player player) {
+        gameround++;
+        if (player == player1) {
+            letPlayer2PostionShips();
+        } else {
+            changeModeToBattlePhase();
         }
     }
 
@@ -363,11 +369,11 @@ public class Main extends Application {
     }
 
     private void changeModeToBattlePhase() {
+        activateMask();
         buttonSaveShipsRight.setVisible(false);
         seeShips1.setVisible(true);
         seeShips2.setVisible(true);
         indicate1.setVisible(true);
-        activateMask();
     }
 
     // Refactoring: Introduce Parameter Object
