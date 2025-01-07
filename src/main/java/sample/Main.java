@@ -401,22 +401,24 @@ public class Main extends Application {
             return;
         }
 
-        if (gameround % 2 == 1) {
-            int[] a = calculateXY(targetField.x(), targetField.y(), player1TopBoard.bottomLeftCorner().x(), player1TopBoard.bottomLeftCorner().y(), player1TopBoard.topRightCorner().x(), player1TopBoard.topRightCorner().y());
+        GameBoard gameBoard = player1TopBoard;
+        if (gameround % 2 == 0) {
+            gameBoard = player2TopBoard;
+        }
 
-            if (a != null) {
-                executeAttack(player1, player2, a, targetField);
-            }
+        //Refactoring: Extract repeated logic
+        int[] a = calculateXY(targetField.x(), targetField.y(), gameBoard.bottomLeftCorner().x(), gameBoard.bottomLeftCorner().y(), gameBoard.topRightCorner().x(), gameBoard.topRightCorner().y());
+        if (a == null) {
+            return;
+        }
+
+        if (gameround % 2 == 1) {
+            executeAttack(player1, player2, a, targetField);
             if (player2.area.gameOver()) {
                 showGameEndScreenPlayer1Won();
             }
-
         } else {
-            int[] a = calculateXY(targetField.x(), targetField.y(), player2TopBoard.bottomLeftCorner().x(), player2TopBoard.bottomLeftCorner().y(), player2TopBoard.topRightCorner().x(), player2TopBoard.topRightCorner().y());
-
-            if (a != null) {
-                executeAttack(player2, player1, a, targetField);
-            }
+            executeAttack(player2, player1, a, targetField);
             if (player1.area.gameOver()) {
                 showGameEndScreenPlayer2Won();
             }
