@@ -127,11 +127,8 @@ public class Main extends Application {
         buttonSaveShipsLeft.setOnAction(new EventHandler<ActionEvent>() {
                                             @Override
                                             public void handle(ActionEvent event) {
-                                                // Refactoring: Introduce Parameter Object
-                                                Coordinates bottomLeftEndOfPositionBoard = new Coordinates(440 + 40, 40 + 440 + 40 + 40);
-                                                Coordinates topRightEndOfPositionBoard = new Coordinates(440 + 440, 40 + 920);
-                                                saveShips(imageShip0, player1, bottomLeftEndOfPositionBoard, topRightEndOfPositionBoard);
-                                                shipsComplete();
+                                                // Refactoring: Method Extraction
+                                                handlePlayer1SaveShips();
                                             }
                                         }
         );
@@ -144,11 +141,8 @@ public class Main extends Application {
                 new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
-                        // Refactoring: Introduce Parameter Object
-                        Coordinates bottomLeftEndOfPositionBoard = new Coordinates(2 * 440 + 40 + 40, 40 + 440 + 40 + 40);
-                        Coordinates topRightEndOfPositionBoard = new Coordinates(440 + 440 + 40 + 440, 920 + 40);
-                        saveShips(imageShip1, player2, bottomLeftEndOfPositionBoard, topRightEndOfPositionBoard);
-                        shipsComplete();
+                        // Refactoring: Method Extraction
+                        handlePlayer2SaveShips();
                     }
                 }
         );
@@ -325,8 +319,29 @@ public class Main extends Application {
         return null;
     }
 
+    // Refactoring: Method extraction
+    private void handlePlayer1SaveShips() {
+        Coordinates bottomLeftEndOfPositionBoard = new Coordinates(440 + 40, 40 + 440 + 40 + 40);
+        Coordinates topRightEndOfPositionBoard = new Coordinates(440 + 440, 40 + 920);
 
-    // Refactoring: Introduce Parameter Object
+        handleButtonSavedClicked(imageShip0, player1, bottomLeftEndOfPositionBoard, topRightEndOfPositionBoard);
+    }
+
+    // Refactoring: Method extraction
+    private void handlePlayer2SaveShips() {
+        Coordinates bottomLeftEndOfPositionBoard = new Coordinates(2 * 440 + 40 + 40, 40 + 440 + 40 + 40);
+        Coordinates topRightEndOfPositionBoard = new Coordinates(440 + 440 + 40 + 440, 920 + 40);
+
+        handleButtonSavedClicked(imageShip1, player2, bottomLeftEndOfPositionBoard, topRightEndOfPositionBoard);
+    }
+
+    // Refactoring: Method extraction
+    private void handleButtonSavedClicked(ImageShip[] imageShip, Player player, Coordinates bottomLeftOfPositionBoard, Coordinates topRightOfPositionBoard) {
+        saveShips(imageShip, player, bottomLeftOfPositionBoard, topRightOfPositionBoard);
+        shipsComplete();
+    }
+
+    // Refactoring: Introduce Parameter Object - Coordinates
     private void saveShips(ImageShip imageShip[], Player player, Coordinates bottomLeftOfPositionBoard, Coordinates topRightOfPositionBoard) {
         /*Geht alle Schiffe duch und schaut erstmal ob */
         for (ImageShip imageship : imageShip) {
