@@ -439,13 +439,23 @@ public class Main extends Application {
                 drawMiss(targetField.x(), targetField.y());
                 attackingPlayer.SaveAttack(a[0], a[1]);
                 activateMask();
-                indicate1.setVisible(false);
-                indicate2.setVisible(true);
+                switchPlayerIndicatorToPlayer(attackedPlayer);
                 missplay.stop();
                 missplay.play();
             }
         }
     }
+
+    private void switchPlayerIndicatorToPlayer(Player player) {
+        if (player == player1) {
+            indicate1.setVisible(true);
+            indicate2.setVisible(false);
+        } else {
+            indicate1.setVisible(false);
+            indicate2.setVisible(true);
+        }
+    }
+
 
     // Refactoring: Extract Method
     private void showGameEndScreenPlayer1Won() {
