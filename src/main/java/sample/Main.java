@@ -399,7 +399,7 @@ public class Main extends Application {
         if (!shipscomplete) {
             return;
         }
-        System.out.println("Schiffe fertig");
+
         if (gameround % 2 == 1) {
             int[] a = calculateXY(targetField.x(), targetField.y(), 440 + 40, 40 + 40, 440 + 440, 440 + 40);
 
@@ -407,20 +407,7 @@ public class Main extends Application {
                 executeAttack(player1, player2, a, targetField);
             }
             if (player2.area.gameOver()) {
-                System.out.println("Spieler 1 hat gewonnen");
-                deactivateMask();
-                seeShips1.setVisible(false);
-                seeShips2.setVisible(false);
-                reset.setVisible(false);
-                battleshipcontainer.getChildren().add(wonleft);
-                wonleft.setX(50);
-                wonleft.setY(520);
-                winnerplay.stop();
-                winnerplay.play();
-                battleshipcontainer.getChildren().add(cont);
-                cont.setLayoutX(160);
-                cont.setLayoutY(850);
-                cont.setVisible(true);
+                showGameEndScreenPlayer1Won();
             }
 
         } else {
@@ -430,21 +417,7 @@ public class Main extends Application {
                 executeAttack(player2, player1, a, targetField);
             }
             if (player1.area.gameOver()) {
-                System.out.println("Spieler 2 hat gewonnen");
-                deactivateMask();
-                seeShips1.setVisible(false);
-                seeShips2.setVisible(false);
-                reset.setVisible(false);
-                battleshipcontainer.getChildren().add(wonright);
-                wonright.setX(1450);
-                wonright.setY(520);
-                winnerplay.stop();
-                winnerplay.play();
-                battleshipcontainer.getChildren().add(cont);
-                cont.setLayoutX(1520);
-                cont.setLayoutY(850);
-                cont.setVisible(true);
-
+                showGameEndScreenPlayer2Won();
             }
         }
     }
@@ -469,6 +442,42 @@ public class Main extends Application {
                 missplay.play();
             }
         }
+    }
+
+    // Refactoring: Extract Method
+    private void showGameEndScreenPlayer1Won() {
+        System.out.println("Spieler 1 hat gewonnen");
+        deactivateMask();
+        seeShips1.setVisible(false);
+        seeShips2.setVisible(false);
+        reset.setVisible(false);
+        battleshipcontainer.getChildren().add(wonleft);
+        wonleft.setX(50);
+        wonleft.setY(520);
+        winnerplay.stop();
+        winnerplay.play();
+        battleshipcontainer.getChildren().add(cont);
+        cont.setLayoutX(160);
+        cont.setLayoutY(850);
+        cont.setVisible(true);
+    }
+
+    // Refactoring: Extract Method
+    private void showGameEndScreenPlayer2Won() {
+        System.out.println("Spieler 2 hat gewonnen");
+        deactivateMask();
+        seeShips1.setVisible(false);
+        seeShips2.setVisible(false);
+        reset.setVisible(false);
+        battleshipcontainer.getChildren().add(wonright);
+        wonright.setX(1450);
+        wonright.setY(520);
+        winnerplay.stop();
+        winnerplay.play();
+        battleshipcontainer.getChildren().add(cont);
+        cont.setLayoutX(1520);
+        cont.setLayoutY(850);
+        cont.setVisible(true);
     }
 
     /*Wasserzeichen, gerundet auf die richtige Stelle setzen*/
