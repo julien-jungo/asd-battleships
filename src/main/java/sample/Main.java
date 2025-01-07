@@ -321,40 +321,15 @@ public class Main extends Application {
 
 
     private void saveShips(ImageShip imageShip[], Player player, int p1x, int p1y, int p2x, int p2y) {
-        //System.out.println("Knopf gedrückt");
-
         /*Geht alle Schiffe duch und schaut erstmal ob */
         for (ImageShip imageship : imageShip) {
-            if (!imageship.isDisable()) {
-                int a[] = calculateXY(imageship.getCoordinates().x(), imageship.getCoordinates().y(), p1x, p1y, p2x, p2y);
-
-                if (a != null) {
-                    if (player.area.setShip(new Coordinates(a[0], a[1]), new Coordinates(imageship.getDiffVectorX(), imageship.getDiffVectorY()), imageship.getDirection(), imageship.getLength())) {
-                        // System.out.println("schiff angelegt");
-                        imageship.lock();
-
-                    } else {
-                        // System.out.println("schiff nicht angelegt+ zurückseten");
-                        imageship.changePosition(new Coordinates(0, 0));
-                        imageship.rotateTo(Direction.RIGHT);
-                    }
-                } else {
-                    //  System.out.println("null+zurücksetzen");
-                    imageship.changePosition(new Coordinates(0, 0));
-                    imageship.rotateTo(Direction.RIGHT);
-
-                }
-            } else {
-                //   System.out.println("schiff deaktiviert");
-            }
+            placeShipOnBoard(imageship, player, p1x, p1y, p2x, p2y);
         }
         if (player.area.isFleetComplete()) {
             gameround++;
             if (player == player1) {
                 changeMask();
                 buttonSaveShipsLeft.setVisible(false);
-
-
             } else {
                 buttonSaveShipsRight.setVisible(false);
                 changeMask();
@@ -367,8 +342,27 @@ public class Main extends Application {
             if (player1.area.isFleetComplete() && player2.area.isFleetComplete()) {
                 activateMask();
             }
-
         }
+    }
+
+    private void placeShipOnBoard(ImageShip imageship, Player player, int p1x, int p1y, int p2x, int p2y) {
+        if (imageship.isDisable()) {
+            return;
+        }
+        int a[] = calculateXY(imageship.getCoordinates().x(), imageship.getCoordinates().y(), p1x, p1y, p2x, p2y);
+
+        if (a == null) {
+            imageship.changePosition(new Coordinates(0, 0));
+            imageship.rotateTo(Direction.RIGHT);
+            return;
+        }
+
+        if (!player.area.setShip(new Coordinates(a[0], a[1]), new Coordinates(imageship.getDiffVectorX(), imageship.getDiffVectorY()), imageship.getDirection(), imageship.getLength())) {
+            imageship.changePosition(new Coordinates(0, 0));
+            imageship.rotateTo(Direction.RIGHT);
+            return;
+        }
+        imageship.lock();
     }
 
     private void attacks(int x, int y) {
