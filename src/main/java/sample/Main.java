@@ -21,11 +21,19 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import sample.ui.GameBoard;
 
 import java.io.File;
 
 
 public class Main extends Application {
+
+    // Refactoring: Replace Magic Number with Symbolic Constant
+    final GameBoard player1TopBoard = new GameBoard(new Coordinates(440 + 40, 40 + 40), new Coordinates(440 + 440, 440 + 40));
+    final GameBoard player1BottomBoard = new GameBoard(new Coordinates(440 + 40, 40 + 440 + 40 + 40), new Coordinates(440 + 440, 40 + 920));
+    final GameBoard player2TopBoard = new GameBoard(new Coordinates(440 + 40 + 10 * 40 + 2 * 40, 40 + 40), new Coordinates(440 + 440 + 440 + 40, 440 + 40));
+    final GameBoard player2BottomBoard = new GameBoard(new Coordinates(2 * 440 + 40 + 40, 40 + 440 + 40 + 40), new Coordinates(440 + 440 + 40 + 440, 920 + 40));
+
     private Player player1 = new Player(true);
     private Player player2 = new Player(true);
     private int gameround = 1;
@@ -309,18 +317,12 @@ public class Main extends Application {
 
     // Refactoring: Method extraction
     private void handlePlayer1SaveShips() {
-        Coordinates bottomLeftEndOfPositionBoard = new Coordinates(440 + 40, 40 + 440 + 40 + 40);
-        Coordinates topRightEndOfPositionBoard = new Coordinates(440 + 440, 40 + 920);
-
-        handleButtonSavedClicked(imageShip0, player1, bottomLeftEndOfPositionBoard, topRightEndOfPositionBoard);
+        handleButtonSavedClicked(imageShip0, player1, player1BottomBoard.bottomLeftCorner(), player1BottomBoard.topRightCorner());
     }
 
     // Refactoring: Method extraction
     private void handlePlayer2SaveShips() {
-        Coordinates bottomLeftEndOfPositionBoard = new Coordinates(2 * 440 + 40 + 40, 40 + 440 + 40 + 40);
-        Coordinates topRightEndOfPositionBoard = new Coordinates(440 + 440 + 40 + 440, 920 + 40);
-
-        handleButtonSavedClicked(imageShip1, player2, bottomLeftEndOfPositionBoard, topRightEndOfPositionBoard);
+        handleButtonSavedClicked(imageShip1, player2, player2BottomBoard.bottomLeftCorner(), player2BottomBoard.topRightCorner());
     }
 
     // Refactoring: Method extraction
@@ -400,7 +402,7 @@ public class Main extends Application {
         }
 
         if (gameround % 2 == 1) {
-            int[] a = calculateXY(targetField.x(), targetField.y(), 440 + 40, 40 + 40, 440 + 440, 440 + 40);
+            int[] a = calculateXY(targetField.x(), targetField.y(), player1TopBoard.bottomLeftCorner().x(), player1TopBoard.bottomLeftCorner().y(), player1TopBoard.topRightCorner().x(), player1TopBoard.topRightCorner().y());
 
             if (a != null) {
                 executeAttack(player1, player2, a, targetField);
@@ -410,7 +412,7 @@ public class Main extends Application {
             }
 
         } else {
-            int[] a = calculateXY(targetField.x(), targetField.y(), 440 + 40 + 10 * 40 + 2 * 40, 40 + 40, 440 + 440 + 440 + 40, 440 + 40);
+            int[] a = calculateXY(targetField.x(), targetField.y(), player2TopBoard.bottomLeftCorner().x(), player2TopBoard.bottomLeftCorner().y(), player2TopBoard.topRightCorner().x(), player2TopBoard.topRightCorner().y());
 
             if (a != null) {
                 executeAttack(player2, player1, a, targetField);
