@@ -332,9 +332,6 @@ public class Main extends Application {
             } else {
                 changeModeToBattlePhase();
             }
-            if (player1.area.isFleetComplete() && player2.area.isFleetComplete()) {
-                activateMask();
-            }
         }
     }
 
@@ -348,7 +345,7 @@ public class Main extends Application {
         seeShips1.setVisible(true);
         seeShips2.setVisible(true);
         indicate1.setVisible(true);
-        changeMask();
+        activateMask();
     }
 
     private void placeShipOnBoard(ImageShip imageship, Player player, int p1x, int p1y, int p2x, int p2y) {
