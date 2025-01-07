@@ -114,7 +114,7 @@ public class Main extends Application {
                     pressedX = event.getSceneX();
                     pressedY = event.getSceneY();
                     //    System.out.println("x = " + pressedX + " y = " + pressedY);
-                    attacks((int) Math.round(pressedX), (int) Math.round(pressedY));
+                    attack(new Coordinates((int) Math.round(pressedX), (int) Math.round(pressedY)));
                 }
             }
         });
@@ -391,9 +391,7 @@ public class Main extends Application {
     }
 
     // Refactoring: Replace Nested Conditional with Guard Clauses
-    private void attacks(int x, int y) {
-        int a[];
-
+    private void attack(Coordinates targetField) {
         if (player1.area.gameOver() || player2.area.gameOver()) {
             return;
         }
@@ -403,27 +401,10 @@ public class Main extends Application {
         }
         System.out.println("Schiffe fertig");
         if (gameround % 2 == 1) {
-            a = calculateXY(x, y, 440 + 40, 40 + 40, 440 + 440, 440 + 40);
+            int[] a = calculateXY(targetField.x(), targetField.y(), 440 + 40, 40 + 40, 440 + 440, 440 + 40);
 
             if (a != null) {
-                if (player1.attackPossible(a[0], a[1])) {
-                    if (player2.area.attack(new Coordinates(a[0], a[1]))) {
-                        drawAttack(a[0], a[1], x, y, player2);
-                        player1.SaveAttack(a[0], a[1]);
-                        activateMask();
-                        bombplay.stop();
-                        bombplay.play();
-
-                    } else {
-                        drawMiss(x, y);
-                        player1.SaveAttack(a[0], a[1]);
-                        activateMask();
-                        indicate1.setVisible(false);
-                        indicate2.setVisible(true);
-                        missplay.stop();
-                        missplay.play();
-                    }
-                }
+                executeAttack(player1, player2, a, targetField);
             }
             if (player2.area.gameOver()) {
                 System.out.println("Spieler 1 hat gewonnen");
@@ -443,27 +424,10 @@ public class Main extends Application {
             }
 
         } else {
-            a = calculateXY(x, y, 440 + 40 + 10 * 40 + 2 * 40, 40 + 40, 440 + 440 + 440 + 40, 440 + 40);
+            int[] a = calculateXY(targetField.x(), targetField.y(), 440 + 40 + 10 * 40 + 2 * 40, 40 + 40, 440 + 440 + 440 + 40, 440 + 40);
+
             if (a != null) {
-                if (player2.attackPossible(a[0], a[1])) {
-                    if (player1.area.attack(new Coordinates(a[0], a[1]))) {
-                        drawAttack(a[0], a[1], x, y, player1);
-                        player2.SaveAttack(a[0], a[1]);
-                        activateMask();
-                        bombplay.stop();
-                        bombplay.play();
-
-                    } else {
-                        drawMiss(x, y);
-                        player2.SaveAttack(a[0], a[1]);
-                        activateMask();
-                        indicate1.setVisible(true);
-                        indicate2.setVisible(false);
-                        missplay.stop();
-                        missplay.play();
-                    }
-
-                }
+                executeAttack(player2, player1, a, targetField);
             }
             if (player1.area.gameOver()) {
                 System.out.println("Spieler 2 hat gewonnen");
@@ -481,6 +445,28 @@ public class Main extends Application {
                 cont.setLayoutY(850);
                 cont.setVisible(true);
 
+            }
+        }
+    }
+
+    // Refactoring: Extract Method
+    private void executeAttack(Player attackingPlayer, Player attackedPlayer, int[] a, Coordinates targetField) {
+        if (attackingPlayer.attackPossible(a[0], a[1])) {
+            if (attackedPlayer.area.attack(new Coordinates(a[0], a[1]))) {
+                drawAttack(a[0], a[1], targetField.x(), targetField.y(), attackedPlayer);
+                attackingPlayer.SaveAttack(a[0], a[1]);
+                activateMask();
+                bombplay.stop();
+                bombplay.play();
+
+            } else {
+                drawMiss(targetField.x(), targetField.y());
+                attackingPlayer.SaveAttack(a[0], a[1]);
+                activateMask();
+                indicate1.setVisible(false);
+                indicate2.setVisible(true);
+                missplay.stop();
+                missplay.play();
             }
         }
     }
