@@ -127,7 +127,10 @@ public class Main extends Application {
         buttonSaveShipsLeft.setOnAction(new EventHandler<ActionEvent>() {
                                             @Override
                                             public void handle(ActionEvent event) {
-                                                saveShips(imageShip0, player1, 440 + 40, 40 + 440 + 40 + 40, 440 + 440, 40 + 920);
+                                                // Refactoring: Introduce Parameter Object
+                                                Coordinates bottomLeftEndOfPositionBoard = new Coordinates(440 + 40, 40 + 440 + 40 + 40);
+                                                Coordinates topRightEndOfPositionBoard = new Coordinates(440 + 440, 40 + 920);
+                                                saveShips(imageShip0, player1, bottomLeftEndOfPositionBoard, topRightEndOfPositionBoard);
                                                 shipsComplete();
                                             }
                                         }
@@ -141,7 +144,10 @@ public class Main extends Application {
                 new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
-                        saveShips(imageShip1, player2, 2 * 440 + 40 + 40, 40 + 440 + 40 + 40, 440 + 440 + 40 + 440, 920 + 40);
+                        // Refactoring: Introduce Parameter Object
+                        Coordinates bottomLeftEndOfPositionBoard = new Coordinates(2 * 440 + 40 + 40, 40 + 440 + 40 + 40);
+                        Coordinates topRightEndOfPositionBoard = new Coordinates(440 + 440 + 40 + 440, 920 + 40);
+                        saveShips(imageShip1, player2, bottomLeftEndOfPositionBoard, topRightEndOfPositionBoard);
                         shipsComplete();
                     }
                 }
@@ -320,10 +326,11 @@ public class Main extends Application {
     }
 
 
-    private void saveShips(ImageShip imageShip[], Player player, int p1x, int p1y, int p2x, int p2y) {
+    // Refactoring: Introduce Parameter Object
+    private void saveShips(ImageShip imageShip[], Player player, Coordinates bottomLeftOfPositionBoard, Coordinates topRightOfPositionBoard) {
         /*Geht alle Schiffe duch und schaut erstmal ob */
         for (ImageShip imageship : imageShip) {
-            placeShipOnBoard(imageship, player, p1x, p1y, p2x, p2y);
+            placeShipOnBoard(imageship, player, bottomLeftOfPositionBoard.x(), bottomLeftOfPositionBoard.y(), topRightOfPositionBoard.x(), topRightOfPositionBoard.y());
         }
         if (player.area.isFleetComplete()) {
             gameround++;
