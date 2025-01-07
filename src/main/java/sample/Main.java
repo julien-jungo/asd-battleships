@@ -124,29 +124,18 @@ public class Main extends Application {
         buttonSaveShipsLeft.setLayoutY(500);
         buttonSaveShipsLeft.setPrefSize(120, 10);
 
-        buttonSaveShipsLeft.setOnAction(new EventHandler<ActionEvent>() {
-                                            @Override
-                                            public void handle(ActionEvent event) {
-                                                // Refactoring: Method Extraction
-                                                handlePlayer1SaveShips();
-                                            }
-                                        }
-        );
+        // Refactoring: Method Extraction
+        // Refactoring: Anonymous Class -> Lambda Expression
+        buttonSaveShipsLeft.setOnAction((ActionEvent event) -> handlePlayer1SaveShips());
 
 
         buttonSaveShipsRight.setLayoutX(1520);
         buttonSaveShipsRight.setLayoutY(500);
         buttonSaveShipsRight.setPrefSize(120, 10);
-        buttonSaveShipsRight.setOnAction(
-                new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        // Refactoring: Method Extraction
-                        handlePlayer2SaveShips();
-                    }
-                }
-        );
 
+        // Refactoring: Method Extraction
+        // Refactoring: Anonymous Class -> Lambda Expression
+        buttonSaveShipsRight.setOnAction((ActionEvent event) -> handlePlayer2SaveShips());
 
         startmenu.setVisible(true);
         seeShips1.setLayoutX(1520);
