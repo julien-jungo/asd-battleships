@@ -6,8 +6,7 @@ public class Player {
 
     Field area = new Field();
     private ArrayList<Coordinates> attackPositions = new ArrayList<>();
-    private ArrayList<AISave> AIsave = null;
-    private boolean isHuman;
+    private final boolean isHuman;
 
     Player(boolean isHuman) {
         this.isHuman = isHuman;
