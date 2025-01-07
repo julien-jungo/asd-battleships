@@ -28,7 +28,6 @@ import java.io.File;
 public class Main extends Application {
     private Player player1 = new Player(true);
     private Player player2 = new Player(true);
-    private double pressedX, pressedY;
     private int gameround = 1;
     private boolean shipscomplete = false; //zu testzwecken auf true später muss auf false gestellt werden
 
@@ -111,9 +110,9 @@ public class Main extends Application {
             @Override
             public void handle(MouseEvent event) {
                 if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
-                    pressedX = event.getSceneX();
-                    pressedY = event.getSceneY();
-                    //    System.out.println("x = " + pressedX + " y = " + pressedY);
+                    // Refactoring: Unnecessary Field Removed, the variables pressedX and pressedY are only used once
+                    double pressedX = event.getSceneX();
+                    double pressedY = event.getSceneY();
                     attack(new Coordinates((int) Math.round(pressedX), (int) Math.round(pressedY)));
                 }
             }
