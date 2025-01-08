@@ -516,8 +516,6 @@ public class Main extends Application {
 
     /*Feuerzeichen, gerundet auf die richtige Stelle. Wenn Schiff zerstört, richtiges destroyed Schiff setzen*/
     private void drawAttack(int xx, int yy, double xreal, double yreal, Player player) {
-        ImageShip imageShipl;
-
         int diffx = (int) xreal % FIELD_WIDTH;
         xreal -= diffx;
 
@@ -570,8 +568,8 @@ public class Main extends Application {
 
             }
 
-            /*Schiff kreiert und zum Battleshipcontainer dazugehaut und lock==true, um es nicht bewegbar zu machen*/
-            imageShipl = new ImageShip(new Coordinates(x - ship.getDiffX(), y - ship.getDiffY()), ship.getLength(), image);
+            // Refactoring: Move Variable Declaration to the place where it is used
+            ImageShip imageShipl = new ImageShip(new Coordinates(x - ship.getDiffX(), y - ship.getDiffY()), ship.getLength(), image);
             battleshipcontainer.getChildren().add(imageShipl.getImageView());
             imageShipl.rotateTo(ship.getDirection());
             imageShipl.lock();
