@@ -524,51 +524,53 @@ public class Main extends Application {
         hit.setY(fieldBorderY);
         battleshipcontainer.getChildren().addAll(hit);
 
-        Image image = new Image("file:res/1x2_Ship_Destroyed.png");
         Ship ship = player.area.isDestroyed(new Coordinates(fieldColumn, fieldRow));
 
         // Refactoring: Extract Variable
         boolean isShipDestroyed = ship != null;
         if (isShipDestroyed) {
-            System.out.println("zerstört");
-            switch (ship.getLength()) {
-                case 0:
-                    break;
-                case 2:
-                    image = new Image("file:res/1x2_Ship_Destroyed.png");
-                    break;
-                case 3:
-                    image = new Image("file:res/1x3_Ship_Destroyed.png");
-                    break;
-                case 4:
-                    image = new Image("file:res/1x4_Ship_Destroyed.png");
-                    break;
-                case 5:
-                    image = new Image("file:res/1x5_Ship_Destroyed.png");
-                    break;
-            }
-
-            int x, y;
-            x = ship.getX() * FIELD_WIDTH;
-            y = ship.getY() * FIELD_WIDTH;
-            //Wird immer in das gegenüberliegende Feld gesetzt, deshalb stehen hier die Koordinaten vom Spieler 2
-            if (player == player1) {
-                x += 2 * 440 + 40 + 40;
-                y += 2 * 40;
-
-            } else {
-                x += (440 + 40);
-                y += (2 * 40);
-
-
-            }
-
-            // Refactoring: Move Variable Declaration to the place where it is used
-            ImageShip imageShipl = new ImageShip(new Coordinates(x - ship.getDiffX(), y - ship.getDiffY()), ship.getLength(), image);
-            battleshipcontainer.getChildren().add(imageShipl.getImageView());
-            imageShipl.rotateTo(ship.getDirection());
-            imageShipl.lock();
+            putDestroyedShip(ship, player);
         }
+    }
+
+    // Refactoring: Extract Method
+    private void putDestroyedShip(Ship ship, Player player) {
+        Image image = new Image("file:res/1x2_Ship_Destroyed.png");
+        switch (ship.getLength()) {
+            case 0:
+                break;
+            case 2:
+                image = new Image("file:res/1x2_Ship_Destroyed.png");
+                break;
+            case 3:
+                image = new Image("file:res/1x3_Ship_Destroyed.png");
+                break;
+            case 4:
+                image = new Image("file:res/1x4_Ship_Destroyed.png");
+                break;
+            case 5:
+                image = new Image("file:res/1x5_Ship_Destroyed.png");
+                break;
+        }
+
+        int x, y;
+        x = ship.getX() * FIELD_WIDTH;
+        y = ship.getY() * FIELD_WIDTH;
+        //Wird immer in das gegenüberliegende Feld gesetzt, deshalb stehen hier die Koordinaten vom Spieler 2
+        if (player == player1) {
+            x += 2 * 440 + 40 + 40;
+            y += 2 * 40;
+
+        } else {
+            x += (440 + 40);
+            y += (2 * 40);
+        }
+
+        // Refactoring: Move Variable Declaration to the place where it is used
+        ImageShip imageShipl = new ImageShip(new Coordinates(x - ship.getDiffX(), y - ship.getDiffY()), ship.getLength(), image);
+        battleshipcontainer.getChildren().add(imageShipl.getImageView());
+        imageShipl.rotateTo(ship.getDirection());
+        imageShipl.lock();
     }
 
     //Alle Schiffe beider Spieler sind gesetzt, dann true
