@@ -22,6 +22,9 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import sample.ui.GameBoard;
+import sample.assets.AudioAssets;
+import sample.assets.ButtonAssets;
+import sample.assets.ImageAssets;
 
 import java.io.File;
 
@@ -42,39 +45,39 @@ public class Main extends Application {
     private int gameround = 1;
     private boolean shipscomplete = false; //zu testzwecken auf true später muss auf false gestellt werden
 
-    private Button buttonSaveShipsLeft = new Button("Schiffe speichern");
-    private Button buttonSaveShipsRight = new Button("Schiffe Speichern");
-    private Button newGame = new Button("Neues Spiel");
-    private Button exit = new Button("Ka Lust mehr! EXIT");
-    private Button reset = new Button("Neustart");
-    private Button seeShips1 = new Button("Zeige meine Schiffe");
-    private Button seeShips2 = new Button("Zeige meine Schiffe");
-    private Button cont = new Button("Hier gehts weiter");
+    private Button buttonSaveShipsLeft = new Button(ButtonAssets.SAVE_SHIPS.getString());
+    private Button buttonSaveShipsRight = new Button(ButtonAssets.SAVE_SHIPS.getString());
+    private Button newGame = new Button(ButtonAssets.NEW_GAME.getString());
+    private Button exit = new Button(ButtonAssets.EXIT.getString());
+    private Button reset = new Button(ButtonAssets.RESET.getString());
+    private Button seeShips1 = new Button(ButtonAssets.SEE_SHIPS.getString());
+    private Button seeShips2 = new Button(ButtonAssets.SEE_SHIPS.getString());
+    private Button cont = new Button(ButtonAssets.CONTINUE.getString());
 
-    private ImageView startmenu = new ImageView("file:res/start.png");
-    private ImageView wonleft = new ImageView("file:res/spieler1_gewonnen.png");
-    private ImageView wonright = new ImageView("file:res/spieler2_gewonnen.png");
-    private ImageView maskleftfield = new ImageView("file:res/Insel_Unten_1.png");
-    private ImageView maskrightfield = new ImageView("file:res/Insel_Unten_2.png");
+    private ImageView startmenu = new ImageView(ImageAssets.START_MENU.getPath());
+    private ImageView wonleft = new ImageView(ImageAssets.WON_LEFT.getPath());
+    private ImageView wonright = new ImageView(ImageAssets.WON_RIGHT.getPath());
+    private ImageView maskleftfield = new ImageView(ImageAssets.MASK_LEFT_FIELD.getPath());
+    private ImageView maskrightfield = new ImageView(ImageAssets.MASK_RIGHT_FIELD.getPath());
 
     private Rectangle indicate1 = new Rectangle(439, 481, 442, 7);
     private Rectangle indicate2 = new Rectangle(919, 481, 442, 7);
 
 
-    private Media bomb = new Media(new File("res/bomb.wav").toURI().toString());
+    private Media bomb = new Media(new File(AudioAssets.BOMB.getPath()).toURI().toString());
     private MediaPlayer bombplay = new MediaPlayer(bomb);
-    private Media miss = new Media(new File("res/miss.wav").toURI().toString());
+    private Media miss = new Media(new File(AudioAssets.MISS.getPath()).toURI().toString());
     private MediaPlayer missplay = new MediaPlayer(miss);
-    private Media music = new Media(new File("res/music.wav").toURI().toString());
+    private Media music = new Media(new File(AudioAssets.MUSIC.getPath()).toURI().toString());
     private MediaPlayer musicplay = new MediaPlayer(music);
-    private Media winner = new Media(new File("res/winner.wav").toURI().toString());
+    private Media winner = new Media(new File(AudioAssets.WINNER.getPath()).toURI().toString());
     private MediaPlayer winnerplay = new MediaPlayer(winner);
 
     private Image bships[] = {
-            new Image("file:res/1x2_Schiff_Horizontal_1_Fertig.png"),
-            new Image("file:res/1x3_Schiff_Horizontal_1_Fertig.png"),
-            new Image("file:res/1x4_Schiff_Horizontal_1_Fertig.png"),
-            new Image("file:res/1x5_Schiff_Horizontal_1_Fertig.png")
+            new Image(ImageAssets.SHIP_1X2_HORIZONTAL.getPath()),
+            new Image(ImageAssets.SHIP_1X3_HORIZONTAL.getPath()),
+            new Image(ImageAssets.SHIP_1X4_HORIZONTAL.getPath()),
+            new Image(ImageAssets.SHIP_1X5_HORIZONTAL.getPath())
     };
 
 
@@ -252,7 +255,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        BackgroundImage background = new BackgroundImage(new Image("file:res/BattleshipsBackground.png", 1800, 1000,
+        BackgroundImage background = new BackgroundImage(new Image(ImageAssets.BACKGROUND.getPath(), 1800, 1000,
                 true, true), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                 BackgroundSize.DEFAULT);
 
@@ -464,17 +467,17 @@ public class Main extends Application {
 
     // Refactoring: Extract Method
     private void executeAttack(Player attackingPlayer, Player attackedPlayer, int[] a, Coordinates targetField) {
-        if (attackingPlayer.attackPossible(a[0], a[1])) {
+        if (attackingPlayer.isAttackPossible(a[0], a[1])) {
             if (attackedPlayer.area.attack(new Coordinates(a[0], a[1]))) {
                 hitShipSegment(a[0], a[1], targetField.x(), targetField.y(), attackedPlayer);
-                attackingPlayer.SaveAttack(a[0], a[1]);
+                attackingPlayer.saveAttack(a[0], a[1]);
                 activateMask();
                 bombplay.stop();
                 bombplay.play();
 
             } else {
                 drawMiss(targetField.x(), targetField.y());
-                attackingPlayer.SaveAttack(a[0], a[1]);
+                attackingPlayer.saveAttack(a[0], a[1]);
                 activateMask();
                 switchPlayerIndicatorToPlayer(attackedPlayer);
                 missplay.stop();
@@ -535,11 +538,12 @@ public class Main extends Application {
         double borderX = getBorderOfAField(x);
         double borderY = getBorderOfAField(y);
 
-        ImageView miss = new ImageView("file:res/Waterhitmarker.png");
+        ImageView miss = new ImageView(ImageAssets.WATER_HIT_MARKER.getPath());
         miss.setX(borderX);
         miss.setY(borderY);
         battleshipcontainer.getChildren().add(miss);
         gameround++;
+
     }
 
     // Refactoring: Extract Method
@@ -553,7 +557,7 @@ public class Main extends Application {
         double fieldBorderX = getBorderOfAField(clickedX);
         double fieldBorderY = getBorderOfAField(clickedY);
 
-        ImageView hit = new ImageView("file:res/Hit.png");
+        ImageView hit = new ImageView(ImageAssets.HIT.getPath());
         hit.setX(fieldBorderX);
         hit.setY(fieldBorderY);
         battleshipcontainer.getChildren().addAll(hit);
@@ -569,21 +573,21 @@ public class Main extends Application {
 
     // Refactoring: Extract Method
     private void putDestroyedShip(Ship ship, Player player) {
-        Image image = new Image("file:res/1x2_Ship_Destroyed.png");
+        Image image = new Image(ImageAssets.SHIP_1X2_DESTROYED.getPath());
         switch (ship.getLength()) {
             case 0:
                 break;
             case 2:
-                image = new Image("file:res/1x2_Ship_Destroyed.png");
+                image = new Image(ImageAssets.SHIP_1X2_DESTROYED.getPath());
                 break;
             case 3:
-                image = new Image("file:res/1x3_Ship_Destroyed.png");
+                image = new Image(ImageAssets.SHIP_1X3_DESTROYED.getPath());
                 break;
             case 4:
-                image = new Image("file:res/1x4_Ship_Destroyed.png");
+                image = new Image(ImageAssets.SHIP_1X4_DESTROYED.getPath());
                 break;
             case 5:
-                image = new Image("file:res/1x5_Ship_Destroyed.png");
+                image = new Image(ImageAssets.SHIP_1X5_DESTROYED.getPath());
                 break;
         }
 
@@ -627,8 +631,8 @@ public class Main extends Application {
         }
         player1.area.removeAll();
         player2.area.removeAll();
-        player1.Reset();
-        player2.Reset();
+        player1.reset();
+        player2.reset();
         gameround = 1;
         shipscomplete = false;
         buttonSaveShipsRight.setVisible(true);
