@@ -151,26 +151,14 @@ public class Main extends Application {
         seeShips1.setLayoutX(1520);
         seeShips1.setLayoutY(550);
         seeShips1.setPrefSize(120, 10);
-        seeShips1.setOnAction(
-                new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        changeMask();
-                    }
-                }
-        );
+        // Refactoring: Anonymous Class -> Lambda Expression
+        seeShips1.setOnAction((ActionEvent event) -> changeMask());
 
         seeShips2.setLayoutX(160);
         seeShips2.setLayoutY(550);
         seeShips2.setPrefSize(120, 10);
-        seeShips2.setOnAction(
-                new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        changeMask();
-                    }
-                }
-        );
+        // Refactoring: Anonymous Class -> Lambda Expression
+        seeShips2.setOnAction((ActionEvent event) -> changeMask());
 
         indicate1.setFill(Color.RED);
         indicate2.setFill(Color.RED);
@@ -266,13 +254,8 @@ public class Main extends Application {
         exit.setLayoutY(500);
         exit.setMinSize(400, 150);
         exit.setFont(font);
-        exit.setOnAction(new EventHandler<ActionEvent>() {
-                             @Override
-                             public void handle(ActionEvent event) {
-                                 System.exit(0);
-                             }
-                         }
-        );
+        // Refactoring: Anonymous Class -> Lambda Expression
+        exit.setOnAction(event -> System.exit(0));
 
 
         battleshipcontainer.getChildren().add(exit);
