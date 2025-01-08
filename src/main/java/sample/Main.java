@@ -515,22 +515,16 @@ public class Main extends Application {
     }
 
     // Refactoring: Change Function Declaration
-    private void hitShipSegment(int fieldColumn, int fieldRow, double x, double y, Player player) {
-        int diffx = (int) x % FIELD_WIDTH;
-        x -= diffx;
-
-        int diffy = (int) y % FIELD_WIDTH;
-        y -= diffy;
+    private void hitShipSegment(int fieldColumn, int fieldRow, double clickedX, double clickedY, Player player) {
+        double fieldBorderX = getBorderOfAField(clickedX);
+        double fieldBorderY = getBorderOfAField(clickedY);
 
         ImageView hit = new ImageView("file:res/Hit.png");
-        hit.setX(x);
-        hit.setY(y);
+        hit.setX(fieldBorderX);
+        hit.setY(fieldBorderY);
         battleshipcontainer.getChildren().addAll(hit);
 
-
         Image image = new Image("file:res/1x2_Ship_Destroyed.png");
-        /*Objekt ship wird entweder null oder ein Schiff zugewiesen (Siehe Klasse Ship, Methode isDestroyed). Wenn
-        das Schiff zerstört ist, wird im switch case gefragt welche Länge und dementsprechen setzen wir das Schiff*/
         Ship ship = player.area.isDestroyed(new Coordinates(fieldColumn, fieldRow));
 
         if (ship != null) {
@@ -553,7 +547,6 @@ public class Main extends Application {
             }
 
             int x, y;
-            //*40 um auf unsere Spielfeldkoordinaten zu kommen
             x = ship.getX() * FIELD_WIDTH;
             y = ship.getY() * FIELD_WIDTH;
             //Wird immer in das gegenüberliegende Feld gesetzt, deshalb stehen hier die Koordinaten vom Spieler 2
