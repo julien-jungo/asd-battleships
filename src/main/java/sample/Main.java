@@ -498,17 +498,20 @@ public class Main extends Application {
 
     /*Wasserzeichen, gerundet auf die richtige Stelle setzen*/
     private void drawMiss(double x, double y) {
-        int diffx = (int) x % FIELD_WIDTH;
-        x -= diffx;
+        double borderX = getBorderOfAField(x);
+        double borderY = getBorderOfAField(y);
 
-        int diffy = (int) y % FIELD_WIDTH;
-        y -= diffy;
-        ImageView miss = new ImageView("file:res/Waterhitmarker.png"); // TODO: is creating the asset the right way to go?
-        miss.setX(x);
-        miss.setY(y);
+        ImageView miss = new ImageView("file:res/Waterhitmarker.png");
+        miss.setX(borderX);
+        miss.setY(borderY);
         battleshipcontainer.getChildren().add(miss);
         gameround++;
+    }
 
+    // Refactoring: Extract Method
+    private double getBorderOfAField(double coordinate) {
+        // Refactoring: Inline Variable
+        return coordinate - (coordinate % FIELD_WIDTH);
     }
 
     /*Feuerzeichen, gerundet auf die richtige Stelle. Wenn Schiff zerstört, richtiges destroyed Schiff setzen*/
