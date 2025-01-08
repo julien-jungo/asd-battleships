@@ -4,12 +4,11 @@ import java.util.ArrayList;
 
 public class Player {
 
-    Field area = new Field();
+    private Field area = new Field();
     private ArrayList<Coordinates> attackPositions = new ArrayList<>();
-    private final boolean isHuman;
 
-    Player(boolean isHuman) {
-        this.isHuman = isHuman;
+    public Field getArea(){
+        return this.area;
     }
 
     public void saveAttack(int x, int y) {

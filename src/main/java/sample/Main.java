@@ -40,8 +40,8 @@ public class Main extends Application {
     final GameBoard player2TopBoard = new GameBoard(new Coordinates(440 + 40 + 10 * 40 + 2 * 40, 40 + 40), new Coordinates(440 + 440 + 440 + 40, 440 + 40));
     final GameBoard player2BottomBoard = new GameBoard(new Coordinates(2 * 440 + 40 + 40, 40 + 440 + 40 + 40), new Coordinates(440 + 440 + 40 + 440, 920 + 40));
 
-    private Player player1 = new Player(true);
-    private Player player2 = new Player(true);
+    private Player player1 = new Player();
+    private Player player2 = new Player();
     private int gameround = 1;
     private boolean shipscomplete = false; //zu testzwecken auf true später muss auf false gestellt werden
 
@@ -369,7 +369,7 @@ public class Main extends Application {
     // Refactoring: Change Function Declaration (name changed from saveShips)
     private void handleButtonSavedClicked(ImageShip[] imageShip, Player player, Coordinates bottomLeftOfPositionBoard, Coordinates topRightOfPositionBoard) {
         saveShips(imageShip, player, bottomLeftOfPositionBoard, topRightOfPositionBoard);
-        if (player.area.isFleetComplete()) {
+        if (player.getArea().isFleetComplete()) {
             startNextGamePhase(player);
         }
         shipsComplete();
@@ -423,7 +423,7 @@ public class Main extends Application {
             return;
         }
 
-        if (!player.area.setShip(new Coordinates(a[0], a[1]), new Coordinates(imageship.getDiffVectorX(), imageship.getDiffVectorY()), imageship.getDirection(), imageship.getLength())) {
+        if (!player.getArea().setShip(new Coordinates(a[0], a[1]), new Coordinates(imageship.getDiffVectorX(), imageship.getDiffVectorY()), imageship.getDirection(), imageship.getLength())) {
             imageship.changePosition(new Coordinates(0, 0));
             imageship.rotateTo(Direction.RIGHT);
             return;
@@ -433,7 +433,7 @@ public class Main extends Application {
 
     // Refactoring: Replace Nested Conditional with Guard Clauses
     private void attack(Coordinates targetField) {
-        if (player1.area.gameOver() || player2.area.gameOver()) {
+        if (player1.getArea().gameOver() || player2.getArea().gameOver()) {
             return;
         }
 
@@ -454,12 +454,12 @@ public class Main extends Application {
 
         if (gameround % 2 == 1) {
             executeAttack(player1, player2, a, targetField);
-            if (player2.area.gameOver()) {
+            if (player2.getArea().gameOver()) {
                 showGameEndScreenPlayer1Won();
             }
         } else {
             executeAttack(player2, player1, a, targetField);
-            if (player1.area.gameOver()) {
+            if (player1.getArea().gameOver()) {
                 showGameEndScreenPlayer2Won();
             }
         }
@@ -468,7 +468,7 @@ public class Main extends Application {
     // Refactoring: Extract Method
     private void executeAttack(Player attackingPlayer, Player attackedPlayer, int[] a, Coordinates targetField) {
         if (attackingPlayer.isAttackPossible(a[0], a[1])) {
-            if (attackedPlayer.area.attack(new Coordinates(a[0], a[1]))) {
+            if (attackedPlayer.getArea().attack(new Coordinates(a[0], a[1]))) {
                 hitShipSegment(a[0], a[1], targetField.x(), targetField.y(), attackedPlayer);
                 attackingPlayer.saveAttack(a[0], a[1]);
                 activateMask();
@@ -562,7 +562,7 @@ public class Main extends Application {
         hit.setY(fieldBorderY);
         battleshipcontainer.getChildren().addAll(hit);
 
-        Ship ship = player.area.isDestroyed(new Coordinates(fieldColumn, fieldRow));
+        Ship ship = player.getArea().isDestroyed(new Coordinates(fieldColumn, fieldRow));
 
         // Refactoring: Extract Variable
         boolean isShipDestroyed = ship != null;
@@ -613,7 +613,7 @@ public class Main extends Application {
 
     //Alle Schiffe beider Spieler sind gesetzt, dann true
     private void shipsComplete() {
-        if (player1.area.isFleetComplete() && player2.area.isFleetComplete()) {
+        if (player1.getArea().isFleetComplete() && player2.getArea().isFleetComplete()) {
             this.shipscomplete = true;
         }
 
@@ -629,8 +629,8 @@ public class Main extends Application {
             imageShip1[i].reset();
 
         }
-        player1.area.removeAll();
-        player2.area.removeAll();
+        player1.getArea().removeAll();
+        player2.getArea().removeAll();
         player1.reset();
         player2.reset();
         gameround = 1;
@@ -638,7 +638,7 @@ public class Main extends Application {
         buttonSaveShipsRight.setVisible(true);
         buttonSaveShipsLeft.setVisible(true);
         battleshipcontainer = new Pane();
-        BackgroundImage background = new BackgroundImage(new Image("file:res/BattleshipsBackground.png", 1800, 1000,
+        BackgroundImage background = new BackgroundImage(new Image(ImageAssets.BACKGROUND.getPath(), 1800, 1000,
                 true, true), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                 BackgroundSize.DEFAULT);
 
