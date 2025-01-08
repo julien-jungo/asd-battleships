@@ -1,7 +1,6 @@
 package sample;
 
 
-
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -22,6 +21,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import sample.ui.GameBoard;
 import sample.assets.AudioAssets;
 import sample.assets.ButtonAssets;
 import sample.assets.ImageAssets;
@@ -30,9 +30,18 @@ import java.io.File;
 
 
 public class Main extends Application {
+
+    // Refactoring: Replace Magic Number with Symbolic Constant
+    static final int FIELD_WIDTH = 40;
+
+    // Refactoring: Replace Magic Number with Symbolic Constant
+    final GameBoard player1TopBoard = new GameBoard(new Coordinates(440 + 40, 40 + 40), new Coordinates(440 + 440, 440 + 40));
+    final GameBoard player1BottomBoard = new GameBoard(new Coordinates(440 + 40, 40 + 440 + 40 + 40), new Coordinates(440 + 440, 40 + 920));
+    final GameBoard player2TopBoard = new GameBoard(new Coordinates(440 + 40 + 10 * 40 + 2 * 40, 40 + 40), new Coordinates(440 + 440 + 440 + 40, 440 + 40));
+    final GameBoard player2BottomBoard = new GameBoard(new Coordinates(2 * 440 + 40 + 40, 40 + 440 + 40 + 40), new Coordinates(440 + 440 + 40 + 440, 920 + 40));
+
     private Player player1 = new Player(true);
     private Player player2 = new Player(true);
-    private double pressedX, pressedY;
     private int gameround = 1;
     private boolean shipscomplete = false; //zu testzwecken auf true später muss auf false gestellt werden
 
@@ -102,89 +111,108 @@ public class Main extends Application {
 
     private Pane battleshipcontainer = new Pane();
 
+    // Refactoring: Slide Statements
     private void drawGUI() {
+        playMusic();
+
+        addMouseClickListener();
+
+        initLeftSaveShipsButton();
+        initRightSaveShipsButton();
+
+        initLeftSeeShipsButton();
+        initRightSeeShipsButton();
+
+        showStartMenu();
+
+        setCurrentPlayerIndicatorColor(Color.RED);
+
+        renderShips();
+        renderGUI();
+
+        hideIrrelevantGUIElementsInFirstPhase();
+        changeMask();
+    }
+
+    // Refactoring: Extract Method
+    private void playMusic() {
         musicplay.setCycleCount(500);
         musicplay.play();
+    }
 
+    // Refactoring: Extract Method
+    private void renderShips() {
         for (int i = 0; i < imageShip0.length; i++) {
             battleshipcontainer.getChildren().add(imageShip0[i].getImageView());
             battleshipcontainer.getChildren().add(imageShip1[i].getImageView());
         }
+    }
 
-        battleshipcontainer.addEventHandler(MouseEvent.ANY, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
-                    pressedX = event.getSceneX();
-                    pressedY = event.getSceneY();
-                    //    System.out.println("x = " + pressedX + " y = " + pressedY);
-                    attacks((int) Math.round(pressedX), (int) Math.round(pressedY));
-                }
-            }
-        });
+    private void addMouseClickListener() {
+        battleshipcontainer.addEventHandler(MouseEvent.ANY, this::handleMouseClick);
+    }
 
-
+    // Refactoring: Extract Method
+    private void initLeftSaveShipsButton() {
         buttonSaveShipsLeft.setLayoutX(1800 - 1520 - 3 * 40);
         buttonSaveShipsLeft.setLayoutY(500);
         buttonSaveShipsLeft.setPrefSize(120, 10);
 
-        buttonSaveShipsLeft.setOnAction(new EventHandler<ActionEvent>() {
-                                            @Override
-                                            public void handle(ActionEvent event) {
-                                                saveShips(imageShip0, player1, 440 + 40, 40 + 440 + 40 + 40, 440 + 440, 40 + 920);
-                                                shipsComplete();
-                                            }
-                                        }
-        );
+        // Refactoring: Method Extraction
+        // Refactoring: Anonymous Class -> Lambda Expression
+        buttonSaveShipsLeft.setOnAction((ActionEvent event) -> handlePlayer1SaveShips());
+    }
 
-
+    // Refactoring: Extract Method
+    private void initRightSaveShipsButton() {
         buttonSaveShipsRight.setLayoutX(1520);
         buttonSaveShipsRight.setLayoutY(500);
         buttonSaveShipsRight.setPrefSize(120, 10);
-        buttonSaveShipsRight.setOnAction(
-                new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        saveShips(imageShip1, player2, 2 * 440 + 40 + 40, 40 + 440 + 40 + 40, 440 + 440 + 40 + 440, 920 + 40);
-                        shipsComplete();
-                    }
-                }
-        );
 
+        // Refactoring: Method Extraction
+        // Refactoring: Anonymous Class -> Lambda Expression
+        buttonSaveShipsRight.setOnAction((ActionEvent event) -> handlePlayer2SaveShips());
+    }
 
+    // Refactoring: Extract Method
+    private void showStartMenu() {
         startmenu.setVisible(true);
+    }
+
+    // Refactoring: Extract Method
+    private void initLeftSeeShipsButton() {
         seeShips1.setLayoutX(1520);
         seeShips1.setLayoutY(550);
         seeShips1.setPrefSize(120, 10);
-        seeShips1.setOnAction(
-                new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        changeMask();
-                    }
-                }
-        );
+        // Refactoring: Anonymous Class -> Lambda Expression
+        seeShips1.setOnAction((ActionEvent event) -> changeMask());
+    }
 
+    // Refactoring: Extract Method
+    private void initRightSeeShipsButton() {
         seeShips2.setLayoutX(160);
         seeShips2.setLayoutY(550);
         seeShips2.setPrefSize(120, 10);
-        seeShips2.setOnAction(
-                new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        changeMask();
-                    }
-                }
-        );
+        // Refactoring: Anonymous Class -> Lambda Expression
+        seeShips2.setOnAction((ActionEvent event) -> changeMask());
+    }
 
-        indicate1.setFill(Color.RED);
-        indicate2.setFill(Color.RED);
+    // Refactoring: Extract Method
+    private void setCurrentPlayerIndicatorColor(Color color) {
+        indicate1.setFill(color);
+        indicate2.setFill(color);
+    }
 
+    // Refactoring: Extract Method
+    private void renderGUI() {
         battleshipcontainer.getChildren().add(seeShips1);
         battleshipcontainer.getChildren().add(seeShips2);
         battleshipcontainer.getChildren().addAll(buttonSaveShipsLeft, buttonSaveShipsRight, maskleftfield, maskrightfield,
-                startmenu, indicate1, indicate2);
+            startmenu, indicate1, indicate2);
+    }
 
+    // Refactoring: Extract Method
+    private void hideIrrelevantGUIElementsInFirstPhase() {
         reset.setVisible(false);
         maskleftfield.setVisible(false);
         maskrightfield.setVisible(false);
@@ -192,8 +220,17 @@ public class Main extends Application {
         seeShips2.setVisible(false);
         indicate1.setVisible(false);
         indicate2.setVisible(false);
-        changeMask();
     }
+
+    private void handleMouseClick(MouseEvent event) {
+        if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
+            // Refactoring: Unnecessary Field Removed, the variables pressedX and pressedY are only used once
+            double pressedX = event.getSceneX();
+            double pressedY = event.getSceneY();
+            attack(new Coordinates((int) Math.round(pressedX), (int) Math.round(pressedY)));
+        }
+    }
+
 
     private void activateMask() {
         maskleftfield.setVisible(true);
@@ -271,13 +308,8 @@ public class Main extends Application {
         exit.setLayoutY(500);
         exit.setMinSize(400, 150);
         exit.setFont(font);
-        exit.setOnAction(new EventHandler<ActionEvent>() {
-                             @Override
-                             public void handle(ActionEvent event) {
-                                 System.exit(0);
-                             }
-                         }
-        );
+        // Refactoring: Anonymous Class -> Lambda Expression
+        exit.setOnAction(event -> System.exit(0));
 
 
         battleshipcontainer.getChildren().add(exit);
@@ -316,233 +348,267 @@ public class Main extends Application {
             vectorx = imageshipx - p1x;
             vectory = imageshipy - p1y;
             //Damit es eine Zahl zwischen 0 und 9 ist (denke ich!!)
-            result[0] = vectorx / 40;
-            result[1] = vectory / 40;
+            result[0] = vectorx / FIELD_WIDTH;
+            result[1] = vectory / FIELD_WIDTH;
             return result;
         }
         return null;
     }
 
+    // Refactoring: Method extraction
+    private void handlePlayer1SaveShips() {
+        handleButtonSavedClicked(imageShip0, player1, player1BottomBoard.bottomLeftCorner(), player1BottomBoard.topRightCorner());
+    }
 
-    private void saveShips(ImageShip imageShip[], Player player, int p1x, int p1y, int p2x, int p2y) {
-        //System.out.println("Knopf gedrückt");
+    // Refactoring: Method extraction
+    private void handlePlayer2SaveShips() {
+        handleButtonSavedClicked(imageShip1, player2, player2BottomBoard.bottomLeftCorner(), player2BottomBoard.topRightCorner());
+    }
 
-        /*Geht alle Schiffe duch und schaut erstmal ob */
-        for (ImageShip imageship : imageShip) {
-            if (!imageship.isDisable()) {
-                int a[] = calculateXY(imageship.getCoordinates().x(), imageship.getCoordinates().y(), p1x, p1y, p2x, p2y);
-
-                if (a != null) {
-                    if (player.area.setShip(new Coordinates(a[0], a[1]), new Coordinates(imageship.getDiffVectorX(), imageship.getDiffVectorY()), imageship.getDirection(), imageship.getLength())) {
-                        // System.out.println("schiff angelegt");
-                        imageship.lock();
-
-                    } else {
-                        // System.out.println("schiff nicht angelegt+ zurückseten");
-                        imageship.changePosition(new Coordinates(0, 0));
-                        imageship.rotateTo(Direction.RIGHT);
-                    }
-                } else {
-                    //  System.out.println("null+zurücksetzen");
-                    imageship.changePosition(new Coordinates(0, 0));
-                    imageship.rotateTo(Direction.RIGHT);
-
-                }
-            } else {
-                //   System.out.println("schiff deaktiviert");
-            }
-        }
+    // Refactoring: Method extraction
+    // Refactoring: Change Function Declaration (name changed from saveShips)
+    private void handleButtonSavedClicked(ImageShip[] imageShip, Player player, Coordinates bottomLeftOfPositionBoard, Coordinates topRightOfPositionBoard) {
+        saveShips(imageShip, player, bottomLeftOfPositionBoard, topRightOfPositionBoard);
         if (player.area.isFleetComplete()) {
-            gameround++;
-            if (player == player1) {
-                changeMask();
-                buttonSaveShipsLeft.setVisible(false);
+            startNextGamePhase(player);
+        }
+        shipsComplete();
+    }
 
-
-            } else {
-                buttonSaveShipsRight.setVisible(false);
-                changeMask();
-                seeShips1.setVisible(true);
-                seeShips2.setVisible(true);
-                indicate1.setVisible(true);
-
-
-            }
-            if (player1.area.isFleetComplete() && player2.area.isFleetComplete()) {
-                activateMask();
-            }
-
+    // Refactoring: Introduce Parameter Object - Coordinates
+    // Refactoring: Extract Method
+    private void saveShips(ImageShip imageShip[], Player player, Coordinates bottomLeftOfPositionBoard, Coordinates topRightOfPositionBoard) {
+        for (ImageShip imageship : imageShip) {
+            placeShipOnBoard(imageship, player, bottomLeftOfPositionBoard, topRightOfPositionBoard);
         }
     }
 
-    private void attacks(int x, int y) {
-        int a[];
-        if (!(player1.area.gameOver() || player2.area.gameOver())) {
-            if (shipscomplete) {
-                System.out.println("Schiffe fertig");
-                if (gameround % 2 == 1) {
-                    a = calculateXY(x, y, 440 + 40, 40 + 40, 440 + 440, 440 + 40);
-
-                    if (a != null) {
-                        if (player1.isAttackPossible(a[0], a[1])) {
-                            if (player2.area.attack(new Coordinates(a[0], a[1]))) {
-                                drawAttack(a[0], a[1], x, y, player2);
-                                player1.saveAttack(a[0], a[1]);
-                                activateMask();
-                                bombplay.stop();
-                                bombplay.play();
-
-                            } else {
-                                drawMiss(x, y);
-                                player1.saveAttack(a[0], a[1]);
-                                activateMask();
-                                indicate1.setVisible(false);
-                                indicate2.setVisible(true);
-                                missplay.stop();
-                                missplay.play();
-                            }
-                        }
-                    }
-                    if (player2.area.gameOver()) {
-                        System.out.println("Spieler 1 hat gewonnen");
-                        deactivateMask();
-                        seeShips1.setVisible(false);
-                        seeShips2.setVisible(false);
-                        reset.setVisible(false);
-                        battleshipcontainer.getChildren().add(wonleft);
-                        wonleft.setX(50);
-                        wonleft.setY(520);
-                        winnerplay.stop();
-                        winnerplay.play();
-                        battleshipcontainer.getChildren().add(cont);
-                        cont.setLayoutX(160);
-                        cont.setLayoutY(850);
-                        cont.setVisible(true);
-                    }
-
-                } else {
-                    a = calculateXY(x, y, 440 + 40 + 10 * 40 + 2 * 40, 40 + 40, 440 + 440 + 440 + 40, 440 + 40);
-                    if (a != null) {
-                        if (player2.isAttackPossible(a[0], a[1])) {
-                            if (player1.area.attack(new Coordinates(a[0], a[1]))) {
-                                drawAttack(a[0], a[1], x, y, player1);
-                                player2.saveAttack(a[0], a[1]);
-                                activateMask();
-                                bombplay.stop();
-                                bombplay.play();
-
-                            } else {
-                                drawMiss(x, y);
-                                player2.saveAttack(a[0], a[1]);
-                                activateMask();
-                                indicate1.setVisible(true);
-                                indicate2.setVisible(false);
-                                missplay.stop();
-                                missplay.play();
-                            }
-
-                        }
-                    }
-                    if (player1.area.gameOver()) {
-                        System.out.println("Spieler 2 hat gewonnen");
-                        deactivateMask();
-                        seeShips1.setVisible(false);
-                        seeShips2.setVisible(false);
-                        reset.setVisible(false);
-                        battleshipcontainer.getChildren().add(wonright);
-                        wonright.setX(1450);
-                        wonright.setY(520);
-                        winnerplay.stop();
-                        winnerplay.play();
-                        battleshipcontainer.getChildren().add(cont);
-                        cont.setLayoutX(1520);
-                        cont.setLayoutY(850);
-                        cont.setVisible(true);
-
-                    }
-                }
-            }
-
+    // Refactoring: Extract Method
+    private void startNextGamePhase(Player player) {
+        gameround++;
+        if (player == player1) {
+            letPlayer2PostionShips();
+        } else {
+            changeModeToBattlePhase();
         }
+    }
+
+    // Refactoring: Extract Method
+    private void letPlayer2PostionShips() {
+        changeMask();
+        buttonSaveShipsLeft.setVisible(false);
+    }
+
+    // Refactoring: Extract Method
+    private void changeModeToBattlePhase() {
+        activateMask();
+        buttonSaveShipsRight.setVisible(false);
+        seeShips1.setVisible(true);
+        seeShips2.setVisible(true);
+        indicate1.setVisible(true);
+    }
+
+    // Refactoring: Introduce Parameter Object
+    // Refactoring: Extract Method
+    // Refactoring: Replace Nested Conditional with Guard Clauses
+    private void placeShipOnBoard(ImageShip imageship, Player player, Coordinates bottomLeftOfPositionBoard, Coordinates topRightOfPositionBoard) {
+        if (imageship.isDisable()) {
+            return;
+        }
+        int a[] = calculateXY(imageship.getCoordinates().x(), imageship.getCoordinates().y(), bottomLeftOfPositionBoard.x(), bottomLeftOfPositionBoard.y(), topRightOfPositionBoard.x(), topRightOfPositionBoard.y());
+
+        if (a == null) {
+            imageship.changePosition(new Coordinates(0, 0));
+            imageship.rotateTo(Direction.RIGHT);
+            return;
+        }
+
+        if (!player.area.setShip(new Coordinates(a[0], a[1]), new Coordinates(imageship.getDiffVectorX(), imageship.getDiffVectorY()), imageship.getDirection(), imageship.getLength())) {
+            imageship.changePosition(new Coordinates(0, 0));
+            imageship.rotateTo(Direction.RIGHT);
+            return;
+        }
+        imageship.lock();
+    }
+
+    // Refactoring: Replace Nested Conditional with Guard Clauses
+    private void attack(Coordinates targetField) {
+        if (player1.area.gameOver() || player2.area.gameOver()) {
+            return;
+        }
+
+        if (!shipscomplete) {
+            return;
+        }
+
+        GameBoard gameBoard = player1TopBoard;
+        if (gameround % 2 == 0) {
+            gameBoard = player2TopBoard;
+        }
+
+        //Refactoring: Extract repeated logic
+        int[] a = calculateXY(targetField.x(), targetField.y(), gameBoard.bottomLeftCorner().x(), gameBoard.bottomLeftCorner().y(), gameBoard.topRightCorner().x(), gameBoard.topRightCorner().y());
+        if (a == null) {
+            return;
+        }
+
+        if (gameround % 2 == 1) {
+            executeAttack(player1, player2, a, targetField);
+            if (player2.area.gameOver()) {
+                showGameEndScreenPlayer1Won();
+            }
+        } else {
+            executeAttack(player2, player1, a, targetField);
+            if (player1.area.gameOver()) {
+                showGameEndScreenPlayer2Won();
+            }
+        }
+    }
+
+    // Refactoring: Extract Method
+    private void executeAttack(Player attackingPlayer, Player attackedPlayer, int[] a, Coordinates targetField) {
+        if (attackingPlayer.isAttackPossible(a[0], a[1])) {
+            if (attackedPlayer.area.attack(new Coordinates(a[0], a[1]))) {
+                hitShipSegment(a[0], a[1], targetField.x(), targetField.y(), attackedPlayer);
+                attackingPlayer.saveAttack(a[0], a[1]);
+                activateMask();
+                bombplay.stop();
+                bombplay.play();
+
+            } else {
+                drawMiss(targetField.x(), targetField.y());
+                attackingPlayer.saveAttack(a[0], a[1]);
+                activateMask();
+                switchPlayerIndicatorToPlayer(attackedPlayer);
+                missplay.stop();
+                missplay.play();
+            }
+        }
+    }
+
+    private void switchPlayerIndicatorToPlayer(Player player) {
+        if (player == player1) {
+            indicate1.setVisible(true);
+            indicate2.setVisible(false);
+        } else {
+            indicate1.setVisible(false);
+            indicate2.setVisible(true);
+        }
+    }
+
+
+    // Refactoring: Extract Method
+    private void showGameEndScreenPlayer1Won() {
+        System.out.println("Spieler 1 hat gewonnen");
+        deactivateMask();
+        seeShips1.setVisible(false);
+        seeShips2.setVisible(false);
+        reset.setVisible(false);
+        battleshipcontainer.getChildren().add(wonleft);
+        wonleft.setX(50);
+        wonleft.setY(520);
+        winnerplay.stop();
+        winnerplay.play();
+        battleshipcontainer.getChildren().add(cont);
+        cont.setLayoutX(160);
+        cont.setLayoutY(850);
+        cont.setVisible(true);
+    }
+
+    // Refactoring: Extract Method
+    private void showGameEndScreenPlayer2Won() {
+        System.out.println("Spieler 2 hat gewonnen");
+        deactivateMask();
+        seeShips1.setVisible(false);
+        seeShips2.setVisible(false);
+        reset.setVisible(false);
+        battleshipcontainer.getChildren().add(wonright);
+        wonright.setX(1450);
+        wonright.setY(520);
+        winnerplay.stop();
+        winnerplay.play();
+        battleshipcontainer.getChildren().add(cont);
+        cont.setLayoutX(1520);
+        cont.setLayoutY(850);
+        cont.setVisible(true);
     }
 
     /*Wasserzeichen, gerundet auf die richtige Stelle setzen*/
     private void drawMiss(double x, double y) {
-        int diffx = (int) x % 40;
-        x -= diffx;
+        double borderX = getBorderOfAField(x);
+        double borderY = getBorderOfAField(y);
 
-        int diffy = (int) y % 40;
-        y -= diffy;
         ImageView miss = new ImageView(ImageAssets.WATER_HIT_MARKER.getPath());
-        miss.setX(x);
-        miss.setY(y);
+        miss.setX(borderX);
+        miss.setY(borderY);
         battleshipcontainer.getChildren().add(miss);
         gameround++;
 
     }
 
-    /*Feuerzeichen, gerundet auf die richtige Stelle. Wenn Schiff zerstört, richtiges destroyed Schiff setzen*/
-    private void drawAttack(int xx, int yy, double xreal, double yreal, Player player) {
-        ImageShip imageShipl;
+    // Refactoring: Extract Method
+    private double getBorderOfAField(double coordinate) {
+        // Refactoring: Inline Variable
+        return coordinate - (coordinate % FIELD_WIDTH);
+    }
 
-        int diffx = (int) xreal % 40;
-        xreal -= diffx;
-
-        int diffy = (int) yreal % 40;
-        yreal -= diffy;
+    // Refactoring: Change Function Declaration
+    private void hitShipSegment(int fieldColumn, int fieldRow, double clickedX, double clickedY, Player player) {
+        double fieldBorderX = getBorderOfAField(clickedX);
+        double fieldBorderY = getBorderOfAField(clickedY);
 
         ImageView hit = new ImageView(ImageAssets.HIT.getPath());
-        hit.setX(xreal);
-        hit.setY(yreal);
+        hit.setX(fieldBorderX);
+        hit.setY(fieldBorderY);
         battleshipcontainer.getChildren().addAll(hit);
 
+        Ship ship = player.area.isDestroyed(new Coordinates(fieldColumn, fieldRow));
 
-        Image image = new Image(ImageAssets.SHIP_1X2_DESTROYED.getPath());
-        /*Objekt ship wird entweder null oder ein Schiff zugewiesen (Siehe Klasse Ship, Methode isDestroyed). Wenn
-        das Schiff zerstört ist, wird im switch case gefragt welche Länge und dementsprechen setzen wir das Schiff*/
-        Ship ship = player.area.isDestroyed(new Coordinates(xx, yy));
-
-        if (ship != null) {
-            System.out.println("zerstört");
-            switch (ship.getLength()) {
-                case 0:
-                    break;
-                case 2:
-                    image = new Image(ImageAssets.SHIP_1X2_DESTROYED.getPath());
-                    break;
-                case 3:
-                    image = new Image(ImageAssets.SHIP_1X3_DESTROYED.getPath());
-                    break;
-                case 4:
-                    image = new Image(ImageAssets.SHIP_1X4_DESTROYED.getPath());
-                    break;
-                case 5:
-                    image = new Image(ImageAssets.SHIP_1X5_DESTROYED.getPath());
-                    break;
-            }
-
-            int x, y;
-            //*40 um auf unsere Spielfeldkoordinaten zu kommen
-            x = ship.getX() * 40;
-            y = ship.getY() * 40;
-            //Wird immer in das gegenüberliegende Feld gesetzt, deshalb stehen hier die Koordinaten vom Spieler 2
-            if (player == player1) {
-                x += 2 * 440 + 40 + 40;
-                y += 2 * 40;
-
-            } else {
-                x += (440 + 40);
-                y += (2 * 40);
-
-
-            }
-
-            /*Schiff kreiert und zum Battleshipcontainer dazugehaut und lock==true, um es nicht bewegbar zu machen*/
-            imageShipl = new ImageShip(new Coordinates(x - ship.getDiffX(), y - ship.getDiffY()), ship.getLength(), image);
-            battleshipcontainer.getChildren().add(imageShipl.getImageView());
-            imageShipl.rotateTo(ship.getDirection());
-            imageShipl.lock();
+        // Refactoring: Extract Variable
+        boolean isShipDestroyed = ship != null;
+        if (isShipDestroyed) {
+            putDestroyedShip(ship, player);
         }
+    }
+
+    // Refactoring: Extract Method
+    private void putDestroyedShip(Ship ship, Player player) {
+        Image image = new Image(ImageAssets.SHIP_1X2_DESTROYED.getPath());
+        switch (ship.getLength()) {
+            case 0:
+                break;
+            case 2:
+                image = new Image(ImageAssets.SHIP_1X2_DESTROYED.getPath());
+                break;
+            case 3:
+                image = new Image(ImageAssets.SHIP_1X3_DESTROYED.getPath());
+                break;
+            case 4:
+                image = new Image(ImageAssets.SHIP_1X4_DESTROYED.getPath());
+                break;
+            case 5:
+                image = new Image(ImageAssets.SHIP_1X5_DESTROYED.getPath());
+                break;
+        }
+
+        int x, y;
+        x = ship.getX() * FIELD_WIDTH;
+        y = ship.getY() * FIELD_WIDTH;
+        //Wird immer in das gegenüberliegende Feld gesetzt, deshalb stehen hier die Koordinaten vom Spieler 2
+        if (player == player1) {
+            x += 2 * 440 + 40 + 40;
+            y += 2 * 40;
+
+        } else {
+            x += (440 + 40);
+            y += (2 * 40);
+        }
+
+        // Refactoring: Move Variable Declaration to the place where it is used
+        ImageShip imageShipl = new ImageShip(new Coordinates(x - ship.getDiffX(), y - ship.getDiffY()), ship.getLength(), image);
+        battleshipcontainer.getChildren().add(imageShipl.getImageView());
+        imageShipl.rotateTo(ship.getDirection());
+        imageShipl.lock();
     }
 
     //Alle Schiffe beider Spieler sind gesetzt, dann true
