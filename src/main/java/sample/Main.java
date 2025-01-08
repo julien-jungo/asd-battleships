@@ -109,27 +109,46 @@ public class Main extends Application {
     private Pane battleshipcontainer = new Pane();
 
     private void drawGUI() {
+        playMusic();
+        renderShips();
+
+        addMouseClickListener();
+        initLeftSaveShipsButton();
+        initRightSaveShipsButton();
+
+        showStartMenu();
+
+        initLeftSeeShipsButton();
+        initRightSeeShipsButton();
+
+        setCurrentPlayerIndicatorColor(Color.RED);
+
+        renderGUI();
+
+        hideIrrelevantGUIElementsForStartScreen();
+        changeMask();
+    }
+
+    // Refactoring: Extract Method
+    private void playMusic() {
         musicplay.setCycleCount(500);
         musicplay.play();
+    }
 
+    // Refactoring: Extract Method
+    private void renderShips() {
         for (int i = 0; i < imageShip0.length; i++) {
             battleshipcontainer.getChildren().add(imageShip0[i].getImageView());
             battleshipcontainer.getChildren().add(imageShip1[i].getImageView());
         }
+    }
 
-        battleshipcontainer.addEventHandler(MouseEvent.ANY, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
-                    // Refactoring: Unnecessary Field Removed, the variables pressedX and pressedY are only used once
-                    double pressedX = event.getSceneX();
-                    double pressedY = event.getSceneY();
-                    attack(new Coordinates((int) Math.round(pressedX), (int) Math.round(pressedY)));
-                }
-            }
-        });
+    private void addMouseClickListener() {
+        battleshipcontainer.addEventHandler(MouseEvent.ANY, this::handleMouseClick);
+    }
 
-
+    // Refactoring: Extract Method
+    private void initLeftSaveShipsButton() {
         buttonSaveShipsLeft.setLayoutX(1800 - 1520 - 3 * 40);
         buttonSaveShipsLeft.setLayoutY(500);
         buttonSaveShipsLeft.setPrefSize(120, 10);
@@ -137,8 +156,10 @@ public class Main extends Application {
         // Refactoring: Method Extraction
         // Refactoring: Anonymous Class -> Lambda Expression
         buttonSaveShipsLeft.setOnAction((ActionEvent event) -> handlePlayer1SaveShips());
+    }
 
-
+    // Refactoring: Extract Method
+    private void initRightSaveShipsButton() {
         buttonSaveShipsRight.setLayoutX(1520);
         buttonSaveShipsRight.setLayoutY(500);
         buttonSaveShipsRight.setPrefSize(120, 10);
@@ -146,28 +167,47 @@ public class Main extends Application {
         // Refactoring: Method Extraction
         // Refactoring: Anonymous Class -> Lambda Expression
         buttonSaveShipsRight.setOnAction((ActionEvent event) -> handlePlayer2SaveShips());
+    }
 
+    // Refactoring: Extract Method
+    private void showStartMenu() {
         startmenu.setVisible(true);
+    }
+
+    // Refactoring: Extract Method
+    private void initLeftSeeShipsButton() {
         seeShips1.setLayoutX(1520);
         seeShips1.setLayoutY(550);
         seeShips1.setPrefSize(120, 10);
         // Refactoring: Anonymous Class -> Lambda Expression
         seeShips1.setOnAction((ActionEvent event) -> changeMask());
+    }
 
+    // Refactoring: Extract Method
+    private void initRightSeeShipsButton() {
         seeShips2.setLayoutX(160);
         seeShips2.setLayoutY(550);
         seeShips2.setPrefSize(120, 10);
         // Refactoring: Anonymous Class -> Lambda Expression
         seeShips2.setOnAction((ActionEvent event) -> changeMask());
+    }
 
-        indicate1.setFill(Color.RED);
-        indicate2.setFill(Color.RED);
+    // Refactoring: Extract Method
+    private void setCurrentPlayerIndicatorColor(Color color) {
+        indicate1.setFill(color);
+        indicate2.setFill(color);
+    }
 
+    // Refactoring: Extract Method
+    private void renderGUI() {
         battleshipcontainer.getChildren().add(seeShips1);
         battleshipcontainer.getChildren().add(seeShips2);
         battleshipcontainer.getChildren().addAll(buttonSaveShipsLeft, buttonSaveShipsRight, maskleftfield, maskrightfield,
-                startmenu, indicate1, indicate2);
+            startmenu, indicate1, indicate2);
+    }
 
+    // Refactoring: Extract Method
+    private void hideIrrelevantGUIElementsForStartScreen() {
         reset.setVisible(false);
         maskleftfield.setVisible(false);
         maskrightfield.setVisible(false);
@@ -175,8 +215,17 @@ public class Main extends Application {
         seeShips2.setVisible(false);
         indicate1.setVisible(false);
         indicate2.setVisible(false);
-        changeMask();
     }
+
+    private void handleMouseClick(MouseEvent event) {
+        if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
+            // Refactoring: Unnecessary Field Removed, the variables pressedX and pressedY are only used once
+            double pressedX = event.getSceneX();
+            double pressedY = event.getSceneY();
+            attack(new Coordinates((int) Math.round(pressedX), (int) Math.round(pressedY)));
+        }
+    }
+
 
     private void activateMask() {
         maskleftfield.setVisible(true);
