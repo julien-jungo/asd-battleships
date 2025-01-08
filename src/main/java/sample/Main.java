@@ -108,24 +108,26 @@ public class Main extends Application {
 
     private Pane battleshipcontainer = new Pane();
 
+    // Refactoring: Slide Statements
     private void drawGUI() {
         playMusic();
-        renderShips();
 
         addMouseClickListener();
+
         initLeftSaveShipsButton();
         initRightSaveShipsButton();
-
-        showStartMenu();
 
         initLeftSeeShipsButton();
         initRightSeeShipsButton();
 
+        showStartMenu();
+
         setCurrentPlayerIndicatorColor(Color.RED);
 
+        renderShips();
         renderGUI();
 
-        hideIrrelevantGUIElementsForStartScreen();
+        hideIrrelevantGUIElementsInFirstPhase();
         changeMask();
     }
 
@@ -207,7 +209,7 @@ public class Main extends Application {
     }
 
     // Refactoring: Extract Method
-    private void hideIrrelevantGUIElementsForStartScreen() {
+    private void hideIrrelevantGUIElementsInFirstPhase() {
         reset.setVisible(false);
         maskleftfield.setVisible(false);
         maskrightfield.setVisible(false);
