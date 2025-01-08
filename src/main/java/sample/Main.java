@@ -29,6 +29,9 @@ import java.io.File;
 public class Main extends Application {
 
     // Refactoring: Replace Magic Number with Symbolic Constant
+    static final int FIELD_WIDTH = 40;
+
+    // Refactoring: Replace Magic Number with Symbolic Constant
     final GameBoard player1TopBoard = new GameBoard(new Coordinates(440 + 40, 40 + 40), new Coordinates(440 + 440, 440 + 40));
     final GameBoard player1BottomBoard = new GameBoard(new Coordinates(440 + 40, 40 + 440 + 40 + 40), new Coordinates(440 + 440, 40 + 920));
     final GameBoard player2TopBoard = new GameBoard(new Coordinates(440 + 40 + 10 * 40 + 2 * 40, 40 + 40), new Coordinates(440 + 440 + 440 + 40, 440 + 40));
@@ -308,8 +311,8 @@ public class Main extends Application {
             vectorx = imageshipx - p1x;
             vectory = imageshipy - p1y;
             //Damit es eine Zahl zwischen 0 und 9 ist (denke ich!!)
-            result[0] = vectorx / 40;
-            result[1] = vectory / 40;
+            result[0] = vectorx / FIELD_WIDTH;
+            result[1] = vectory / FIELD_WIDTH;
             return result;
         }
         return null;
@@ -495,12 +498,12 @@ public class Main extends Application {
 
     /*Wasserzeichen, gerundet auf die richtige Stelle setzen*/
     private void drawMiss(double x, double y) {
-        int diffx = (int) x % 40;
+        int diffx = (int) x % FIELD_WIDTH;
         x -= diffx;
 
-        int diffy = (int) y % 40;
+        int diffy = (int) y % FIELD_WIDTH;
         y -= diffy;
-        ImageView miss = new ImageView("file:res/Waterhitmarker.png");
+        ImageView miss = new ImageView("file:res/Waterhitmarker.png"); // TODO: is creating the asset the right way to go?
         miss.setX(x);
         miss.setY(y);
         battleshipcontainer.getChildren().add(miss);
@@ -512,10 +515,10 @@ public class Main extends Application {
     private void drawAttack(int xx, int yy, double xreal, double yreal, Player player) {
         ImageShip imageShipl;
 
-        int diffx = (int) xreal % 40;
+        int diffx = (int) xreal % FIELD_WIDTH;
         xreal -= diffx;
 
-        int diffy = (int) yreal % 40;
+        int diffy = (int) yreal % FIELD_WIDTH;
         yreal -= diffy;
 
         ImageView hit = new ImageView("file:res/Hit.png");
@@ -550,8 +553,8 @@ public class Main extends Application {
 
             int x, y;
             //*40 um auf unsere Spielfeldkoordinaten zu kommen
-            x = ship.getX() * 40;
-            y = ship.getY() * 40;
+            x = ship.getX() * FIELD_WIDTH;
+            y = ship.getY() * FIELD_WIDTH;
             //Wird immer in das gegenüberliegende Feld gesetzt, deshalb stehen hier die Koordinaten vom Spieler 2
             if (player == player1) {
                 x += 2 * 440 + 40 + 40;
