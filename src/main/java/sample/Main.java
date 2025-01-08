@@ -527,7 +527,9 @@ public class Main extends Application {
         Image image = new Image("file:res/1x2_Ship_Destroyed.png");
         Ship ship = player.area.isDestroyed(new Coordinates(fieldColumn, fieldRow));
 
-        if (ship != null) {
+        // Refactoring: Extract Variable
+        boolean isShipDestroyed = ship != null;
+        if (isShipDestroyed) {
             System.out.println("zerstört");
             switch (ship.getLength()) {
                 case 0:
