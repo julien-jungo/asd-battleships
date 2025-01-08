@@ -1,6 +1,7 @@
 package sample;
 
 
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -21,6 +22,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import sample.assets.AudioAssets;
+import sample.assets.ButtonAssets;
+import sample.assets.ImageAssets;
 
 import java.io.File;
 
@@ -32,39 +36,39 @@ public class Main extends Application {
     private int gameround = 1;
     private boolean shipscomplete = false; //zu testzwecken auf true später muss auf false gestellt werden
 
-    private Button buttonSaveShipsLeft = new Button("Schiffe speichern");
-    private Button buttonSaveShipsRight = new Button("Schiffe Speichern");
-    private Button newGame = new Button("Neues Spiel");
-    private Button exit = new Button("Ka Lust mehr! EXIT");
-    private Button reset = new Button("Neustart");
-    private Button seeShips1 = new Button("Zeige meine Schiffe");
-    private Button seeShips2 = new Button("Zeige meine Schiffe");
-    private Button cont = new Button("Hier gehts weiter");
+    private Button buttonSaveShipsLeft = new Button(ButtonAssets.SAVE_SHIPS.getString());
+    private Button buttonSaveShipsRight = new Button(ButtonAssets.SAVE_SHIPS.getString());
+    private Button newGame = new Button(ButtonAssets.NEW_GAME.getString());
+    private Button exit = new Button(ButtonAssets.EXIT.getString());
+    private Button reset = new Button(ButtonAssets.RESET.getString());
+    private Button seeShips1 = new Button(ButtonAssets.SEE_SHIPS.getString());
+    private Button seeShips2 = new Button(ButtonAssets.SEE_SHIPS.getString());
+    private Button cont = new Button(ButtonAssets.CONTINUE.getString());
 
-    private ImageView startmenu = new ImageView("file:res/start.png");
-    private ImageView wonleft = new ImageView("file:res/spieler1_gewonnen.png");
-    private ImageView wonright = new ImageView("file:res/spieler2_gewonnen.png");
-    private ImageView maskleftfield = new ImageView("file:res/Insel_Unten_1.png");
-    private ImageView maskrightfield = new ImageView("file:res/Insel_Unten_2.png");
+    private ImageView startmenu = new ImageView(ImageAssets.START_MENU.getPath());
+    private ImageView wonleft = new ImageView(ImageAssets.WON_LEFT.getPath());
+    private ImageView wonright = new ImageView(ImageAssets.WON_RIGHT.getPath());
+    private ImageView maskleftfield = new ImageView(ImageAssets.MASK_LEFT_FIELD.getPath());
+    private ImageView maskrightfield = new ImageView(ImageAssets.MASK_RIGHT_FIELD.getPath());
 
     private Rectangle indicate1 = new Rectangle(439, 481, 442, 7);
     private Rectangle indicate2 = new Rectangle(919, 481, 442, 7);
 
 
-    private Media bomb = new Media(new File("res/bomb.wav").toURI().toString());
+    private Media bomb = new Media(new File(AudioAssets.BOMB.getPath()).toURI().toString());
     private MediaPlayer bombplay = new MediaPlayer(bomb);
-    private Media miss = new Media(new File("res/miss.wav").toURI().toString());
+    private Media miss = new Media(new File(AudioAssets.MISS.getPath()).toURI().toString());
     private MediaPlayer missplay = new MediaPlayer(miss);
-    private Media music = new Media(new File("res/music.wav").toURI().toString());
+    private Media music = new Media(new File(AudioAssets.MUSIC.getPath()).toURI().toString());
     private MediaPlayer musicplay = new MediaPlayer(music);
-    private Media winner = new Media(new File("res/winner.wav").toURI().toString());
+    private Media winner = new Media(new File(AudioAssets.WINNER.getPath()).toURI().toString());
     private MediaPlayer winnerplay = new MediaPlayer(winner);
 
     private Image bships[] = {
-            new Image("file:res/1x2_Schiff_Horizontal_1_Fertig.png"),
-            new Image("file:res/1x3_Schiff_Horizontal_1_Fertig.png"),
-            new Image("file:res/1x4_Schiff_Horizontal_1_Fertig.png"),
-            new Image("file:res/1x5_Schiff_Horizontal_1_Fertig.png")
+            new Image(ImageAssets.SHIP_1X2_HORIZONTAL.getPath()),
+            new Image(ImageAssets.SHIP_1X3_HORIZONTAL.getPath()),
+            new Image(ImageAssets.SHIP_1X4_HORIZONTAL.getPath()),
+            new Image(ImageAssets.SHIP_1X5_HORIZONTAL.getPath())
     };
 
 
@@ -214,7 +218,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        BackgroundImage background = new BackgroundImage(new Image("file:res/BattleshipsBackground.png", 1800, 1000,
+        BackgroundImage background = new BackgroundImage(new Image(ImageAssets.BACKGROUND.getPath(), 1800, 1000,
                 true, true), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                 BackgroundSize.DEFAULT);
 
@@ -380,17 +384,17 @@ public class Main extends Application {
                     a = calculateXY(x, y, 440 + 40, 40 + 40, 440 + 440, 440 + 40);
 
                     if (a != null) {
-                        if (player1.attackPossible(a[0], a[1])) {
+                        if (player1.isAttackPossible(a[0], a[1])) {
                             if (player2.area.attack(new Coordinates(a[0], a[1]))) {
                                 drawAttack(a[0], a[1], x, y, player2);
-                                player1.SaveAttack(a[0], a[1]);
+                                player1.saveAttack(a[0], a[1]);
                                 activateMask();
                                 bombplay.stop();
                                 bombplay.play();
 
                             } else {
                                 drawMiss(x, y);
-                                player1.SaveAttack(a[0], a[1]);
+                                player1.saveAttack(a[0], a[1]);
                                 activateMask();
                                 indicate1.setVisible(false);
                                 indicate2.setVisible(true);
@@ -419,17 +423,17 @@ public class Main extends Application {
                 } else {
                     a = calculateXY(x, y, 440 + 40 + 10 * 40 + 2 * 40, 40 + 40, 440 + 440 + 440 + 40, 440 + 40);
                     if (a != null) {
-                        if (player2.attackPossible(a[0], a[1])) {
+                        if (player2.isAttackPossible(a[0], a[1])) {
                             if (player1.area.attack(new Coordinates(a[0], a[1]))) {
                                 drawAttack(a[0], a[1], x, y, player1);
-                                player2.SaveAttack(a[0], a[1]);
+                                player2.saveAttack(a[0], a[1]);
                                 activateMask();
                                 bombplay.stop();
                                 bombplay.play();
 
                             } else {
                                 drawMiss(x, y);
-                                player2.SaveAttack(a[0], a[1]);
+                                player2.saveAttack(a[0], a[1]);
                                 activateMask();
                                 indicate1.setVisible(true);
                                 indicate2.setVisible(false);
@@ -469,7 +473,7 @@ public class Main extends Application {
 
         int diffy = (int) y % 40;
         y -= diffy;
-        ImageView miss = new ImageView("file:res/Waterhitmarker.png");
+        ImageView miss = new ImageView(ImageAssets.WATER_HIT_MARKER.getPath());
         miss.setX(x);
         miss.setY(y);
         battleshipcontainer.getChildren().add(miss);
@@ -487,13 +491,13 @@ public class Main extends Application {
         int diffy = (int) yreal % 40;
         yreal -= diffy;
 
-        ImageView hit = new ImageView("file:res/Hit.png");
+        ImageView hit = new ImageView(ImageAssets.HIT.getPath());
         hit.setX(xreal);
         hit.setY(yreal);
         battleshipcontainer.getChildren().addAll(hit);
 
 
-        Image image = new Image("file:res/1x2_Ship_Destroyed.png");
+        Image image = new Image(ImageAssets.SHIP_1X2_DESTROYED.getPath());
         /*Objekt ship wird entweder null oder ein Schiff zugewiesen (Siehe Klasse Ship, Methode isDestroyed). Wenn
         das Schiff zerstört ist, wird im switch case gefragt welche Länge und dementsprechen setzen wir das Schiff*/
         Ship ship = player.area.isDestroyed(new Coordinates(xx, yy));
@@ -504,16 +508,16 @@ public class Main extends Application {
                 case 0:
                     break;
                 case 2:
-                    image = new Image("file:res/1x2_Ship_Destroyed.png");
+                    image = new Image(ImageAssets.SHIP_1X2_DESTROYED.getPath());
                     break;
                 case 3:
-                    image = new Image("file:res/1x3_Ship_Destroyed.png");
+                    image = new Image(ImageAssets.SHIP_1X3_DESTROYED.getPath());
                     break;
                 case 4:
-                    image = new Image("file:res/1x4_Ship_Destroyed.png");
+                    image = new Image(ImageAssets.SHIP_1X4_DESTROYED.getPath());
                     break;
                 case 5:
-                    image = new Image("file:res/1x5_Ship_Destroyed.png");
+                    image = new Image(ImageAssets.SHIP_1X5_DESTROYED.getPath());
                     break;
             }
 
@@ -561,8 +565,8 @@ public class Main extends Application {
         }
         player1.area.removeAll();
         player2.area.removeAll();
-        player1.Reset();
-        player2.Reset();
+        player1.reset();
+        player2.reset();
         gameround = 1;
         shipscomplete = false;
         buttonSaveShipsRight.setVisible(true);
