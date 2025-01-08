@@ -432,7 +432,7 @@ public class Main extends Application {
     private void executeAttack(Player attackingPlayer, Player attackedPlayer, int[] a, Coordinates targetField) {
         if (attackingPlayer.attackPossible(a[0], a[1])) {
             if (attackedPlayer.area.attack(new Coordinates(a[0], a[1]))) {
-                drawAttack(a[0], a[1], targetField.x(), targetField.y(), attackedPlayer);
+                hitShipSegment(a[0], a[1], targetField.x(), targetField.y(), attackedPlayer);
                 attackingPlayer.SaveAttack(a[0], a[1]);
                 activateMask();
                 bombplay.stop();
@@ -514,24 +514,24 @@ public class Main extends Application {
         return coordinate - (coordinate % FIELD_WIDTH);
     }
 
-    /*Feuerzeichen, gerundet auf die richtige Stelle. Wenn Schiff zerstört, richtiges destroyed Schiff setzen*/
-    private void drawAttack(int xx, int yy, double xreal, double yreal, Player player) {
-        int diffx = (int) xreal % FIELD_WIDTH;
-        xreal -= diffx;
+    // Refactoring: Change Function Declaration
+    private void hitShipSegment(int fieldColumn, int fieldRow, double x, double y, Player player) {
+        int diffx = (int) x % FIELD_WIDTH;
+        x -= diffx;
 
-        int diffy = (int) yreal % FIELD_WIDTH;
-        yreal -= diffy;
+        int diffy = (int) y % FIELD_WIDTH;
+        y -= diffy;
 
         ImageView hit = new ImageView("file:res/Hit.png");
-        hit.setX(xreal);
-        hit.setY(yreal);
+        hit.setX(x);
+        hit.setY(y);
         battleshipcontainer.getChildren().addAll(hit);
 
 
         Image image = new Image("file:res/1x2_Ship_Destroyed.png");
         /*Objekt ship wird entweder null oder ein Schiff zugewiesen (Siehe Klasse Ship, Methode isDestroyed). Wenn
         das Schiff zerstört ist, wird im switch case gefragt welche Länge und dementsprechen setzen wir das Schiff*/
-        Ship ship = player.area.isDestroyed(new Coordinates(xx, yy));
+        Ship ship = player.area.isDestroyed(new Coordinates(fieldColumn, fieldRow));
 
         if (ship != null) {
             System.out.println("zerstört");
